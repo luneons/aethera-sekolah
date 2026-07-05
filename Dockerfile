@@ -2,9 +2,12 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# Install pip explicitly
+RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
+
 # Copy backend files
 COPY backend/requirements-railway.txt .
-RUN pip install --no-cache-dir -r requirements-railway.txt
+RUN pip3 install --no-cache-dir -r requirements-railway.txt
 
 COPY backend/ .
 
