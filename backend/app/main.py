@@ -54,9 +54,18 @@ from pathlib import Path
 async def lifespan(app: FastAPI):
     await init_db()
     # Preload ArcFace models so first request doesn't timeout
-    from app.services.face_service import _get_detector, _get_recognizer
-    _get_detector()
-    _get_recognizer()
+    # Skip kalau onnxruntime/opencv tidak terinstall (Railway free tier)
+    try:
+        import onnxruntime  # noqa: F401
+        import cv2  # noqa: F401
+        from app.services.face_service import _get_detector, _get_recognizer
+        _get_detector()
+        _get_recognizer()
+    except ImportError:
+        import logging
+        logging.getLogger(__name__).warning(
+            "onnxruntime/opencv tidak ditemukan — fitur face recognition dinonaktifkan."
+        )
     # Start scheduler untuk weekly digest
     from app.services.scheduler import start_scheduler, stop_scheduler
     start_scheduler()

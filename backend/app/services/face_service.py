@@ -20,14 +20,24 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Optional, Tuple
 
-import cv2
+try:
+    import cv2
+    import onnxruntime as ort
+    _FACE_LIBS_AVAILABLE = True
+except ImportError:
+    cv2 = None  # type: ignore
+    ort = None  # type: ignore
+    _FACE_LIBS_AVAILABLE = False
+
 import numpy as np
-import onnxruntime as ort
 from PIL import Image, ImageFilter, ImageStat
 
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+
+if not _FACE_LIBS_AVAILABLE:
+    logger.warning("cv2/onnxruntime tidak tersedia — face recognition dinonaktifkan.")
 
 MODEL_VERSION = "arcface-w600k-r50-v1"
 EMBEDDING_DIM = 512  # ArcFace 512-d embedding
@@ -61,8 +71,10 @@ def _download_model(url: str, filepath: Path) -> None:
     logger.info(f"Model downloaded: {filepath.name}")
 
 
-def _get_detector() -> ort.InferenceSession:
-    """Get or load the SCRFD face detector."""
+def _get_detector():
+    """Get or load the SCRFD face detector. Returns None if onnxruntime not available."""
+    if not _FACE_LIBS_AVAILABLE:
+        return None
     global _detector_session
     if _detector_session is None:
         with _model_lock:
@@ -83,8 +95,10 @@ def _get_detector() -> ort.InferenceSession:
     return _detector_session
 
 
-def _get_recognizer() -> ort.InferenceSession:
-    """Get or load the ArcFace recognizer."""
+def _get_recognizer():
+    """Get or load the ArcFace recognizer. Returns None if onnxruntime not available."""
+    if not _FACE_LIBS_AVAILABLE:
+        return None
     global _recognizer_session
     if _recognizer_session is None:
         with _model_lock:
