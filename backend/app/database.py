@@ -11,7 +11,7 @@ from app.config import settings
 _engine_kwargs: dict = {
     "echo": False,
     "future": True,
-    "pool_pre_ping": True,
+    "pool_pre_ping": False,  # aiomysql ping() compat issue — disabled
     "pool_recycle": 3600,
 }
 if not settings.DATABASE_URL.startswith("sqlite"):
