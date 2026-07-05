@@ -1,0 +1,475 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * THEME TOKENS
+ *
+ * Dark mode (default) = "Cyber-Biometric" — deep navy + cyan accent.
+ * Light mode = "Sunrise Fresh" — warm cream + saturated orange accent.
+ *
+ * Light mode bukan sekadar invert dark. Palette-nya didesain ulang biar
+ * mata nyaman & contrast WCAG AA semua kombinasi text/background:
+ * - Background utama: warm off-white #fef9f3 (bukan abu-abu dingin)
+ * - Surface raised: pure white dengan hairline border tipis
+ * - Primary accent: orange #f97316 (Tailwind orange-500) untuk CTA & data viz
+ * - Secondary accent: amber #f59e0b untuk highlight
+ * - Text primary: deep slate #1a1a2e (kontras 12.6:1 di white — lewat AAA)
+ * - Text muted: slate-500 #64748b (kontras 4.6:1 di white — lewat AA)
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces (dark) */
+  --bg-base: #050a0f;
+  --bg-raised: #0a1520;
+  --bg-overlay: #0f1e2e;
+  --bg-muted: #0d1a26;
+  --border-default: #1a3045;
+
+  /* Text (dark) */
+  --text-primary: #e8f4f8;
+  --text-secondary: #8baebe;
+  --text-muted: #4a6b82;
+
+  /* Primary brand — cyan teal (dark mode keeps this) */
+  --brand-50: 224 255 254;
+  --brand-100: 179 253 253;
+  --brand-200: 125 249 249;
+  --brand-300: 0 242 242;
+  --brand-400: 0 212 212;
+  --brand-500: 0 184 184;
+  --brand-600: 0 153 153;
+  --brand-700: 0 119 119;
+
+  /* Status (works in both modes — color-tested for contrast) */
+  --color-success: #00e676;
+  --color-warning: #ffc107;
+  --color-danger: #ff1744;
+  --color-info: #00d4d4;
+
+  /* Accents */
+  --accent-gold: #ffc107;
+  --accent-silver: #c0d4dc;
+  --accent-bronze: #cd7f32;
+}
+
+html.light {
+  color-scheme: light;
+
+  /* SURFACES — warm cream system */
+  --bg-base: #fef9f3;          /* Cornsilk warm — easier on eyes than pure white */
+  --bg-raised: #ffffff;         /* Card/panel — pure white */
+  --bg-overlay: #ffffff;
+  --bg-muted: #fff5e9;          /* Warm peach tint for striped tables */
+  --border-default: #fde2c4;    /* Soft peach border */
+
+  /* TEXT — deep slate for max contrast on warm background */
+  --text-primary: #1a1a2e;      /* 12.6:1 vs base — AAA */
+  --text-secondary: #475569;    /* 7.1:1 — AAA */
+  --text-muted: #64748b;        /* 4.6:1 — AA */
+
+  /* PRIMARY brand FLIPS to vibrant orange untuk light mode */
+  --brand-50: 255 247 237;
+  --brand-100: 255 237 213;
+  --brand-200: 254 215 170;
+  --brand-300: 253 186 116;
+  --brand-400: 251 146 60;
+  --brand-500: 249 115 22;       /* Tailwind orange-500 — main CTA */
+  --brand-600: 234 88 12;
+  --brand-700: 194 65 12;
+}
+
+/* ── Theme transition animation ──────────────────────────────────────── */
+
+/* Smooth color interpolation untuk semua perubahan tema. */
+html, body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition:
+    background-color 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    fill 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    stroke 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 600ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-delay: 0ms !important;
+}
+
+/* Fallback (browser tidak support clip-path animation) */
+@supports not (clip-path: circle(0%)) {
+  html, body {
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+}
+
+/* ── Layout safety ──────────────────────────────────────────────────── */
+
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+p, h1, h2, h3, h4, h5, h6, li {
+  /* `break-word` (bukan `anywhere`) — hanya break kalau benar2 tidak ada
+     soft-break opportunity (mis. URL super panjang). Tetap menjaga kata
+     utuh kalau masih bisa wrap di spasi. */
+  overflow-wrap: break-word;
+}
+
+/* Class manual untuk teks yang memang harus break agresif (URL, kode panjang) */
+.break-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+table, thead, tbody, tr, th, td {
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+@media (max-width: 767px) {
+  .overflow-x-auto > table {
+    min-width: max-content;
+  }
+}
+
+/* ── Light mode override untuk Tailwind tokens ──────────────────────── */
+
+html.light .bg-surface-base { background-color: var(--bg-base) !important; }
+html.light .bg-surface-raised { background-color: var(--bg-raised) !important; }
+html.light .bg-surface-muted { background-color: var(--bg-muted) !important; }
+html.light .bg-surface-overlay { background-color: var(--bg-overlay) !important; }
+html.light .border-surface-border { border-color: var(--border-default) !important; }
+html.light .text-text-primary { color: var(--text-primary) !important; }
+html.light .text-text-secondary { color: var(--text-secondary) !important; }
+html.light .text-text-muted { color: var(--text-muted) !important; }
+html.light .text-text-inverse { color: #ffffff !important; }
+
+/* Bg muted dengan opacity — fix supaya tetap warm di light mode */
+html.light .bg-surface-muted\/80 { background-color: rgba(255, 245, 233, 0.85) !important; }
+html.light .bg-surface-muted\/60 { background-color: rgba(255, 245, 233, 0.7) !important; }
+html.light .bg-surface-muted\/50 { background-color: rgba(255, 245, 233, 0.6) !important; }
+html.light .bg-surface-muted\/40 { background-color: rgba(255, 245, 233, 0.45) !important; }
+html.light .bg-surface-base\/70 { background-color: rgba(254, 249, 243, 0.78) !important; }
+html.light .bg-surface-base\/60 { background-color: rgba(254, 249, 243, 0.68) !important; }
+html.light .bg-surface-base\/50 { background-color: rgba(254, 249, 243, 0.55) !important; }
+
+/* bg-surface-raised dengan opacity — kartu, quick links, feature cards di login */
+html.light .bg-surface-raised\/95 { background-color: rgba(255, 255, 255, 0.97) !important; }
+html.light .bg-surface-raised\/90 { background-color: rgba(255, 255, 255, 0.92) !important; }
+html.light .bg-surface-raised\/80 { background-color: rgba(255, 255, 255, 0.85) !important; }
+html.light .bg-surface-raised\/70 { background-color: rgba(255, 255, 255, 0.75) !important; }
+html.light .bg-surface-raised\/60 { background-color: rgba(255, 255, 255, 0.65) !important; }
+html.light .bg-surface-raised\/50 { background-color: rgba(255, 255, 255, 0.55) !important; }
+html.light .bg-surface-raised\/40 { background-color: rgba(255, 255, 255, 0.45) !important; }
+html.light .bg-surface-raised\/30 { background-color: rgba(255, 255, 255, 0.35) !important; }
+html.light .bg-surface-raised\/20 { background-color: rgba(255, 255, 255, 0.25) !important; }
+html.light .bg-surface-raised\/10 { background-color: rgba(255, 255, 255, 0.12) !important; }
+
+/* hover variants */
+html.light .hover\:bg-surface-raised\/70:hover { background-color: rgba(255, 255, 255, 0.80) !important; }
+html.light .hover\:bg-surface-raised\/60:hover { background-color: rgba(255, 255, 255, 0.72) !important; }
+
+/* bg-surface-base dengan opacity — modal backdrop, overlay */
+html.light .bg-surface-base\/95 { background-color: rgba(254, 249, 243, 0.97) !important; }
+html.light .bg-surface-base\/85 { background-color: rgba(254, 249, 243, 0.88) !important; }
+html.light .bg-surface-base\/80 { background-color: rgba(254, 249, 243, 0.83) !important; }
+html.light .bg-surface-base\/75 { background-color: rgba(254, 249, 243, 0.78) !important; }
+html.light .bg-surface-base\/70 { background-color: rgba(254, 249, 243, 0.72) !important; }
+html.light .bg-surface-base\/60 { background-color: rgba(254, 249, 243, 0.65) !important; }
+html.light .bg-surface-base\/50 { background-color: rgba(254, 249, 243, 0.55) !important; }
+html.light .bg-surface-base\/40 { background-color: rgba(254, 249, 243, 0.45) !important; }
+html.light .bg-surface-base\/30 { background-color: rgba(254, 249, 243, 0.35) !important; }
+html.light .bg-surface-base\/20 { background-color: rgba(254, 249, 243, 0.25) !important; }
+
+/* bg-surface-muted dengan opacity */
+html.light .bg-surface-muted\/80 { background-color: rgba(255, 245, 233, 0.85) !important; }
+html.light .bg-surface-muted\/60 { background-color: rgba(255, 245, 233, 0.70) !important; }
+html.light .bg-surface-muted\/50 { background-color: rgba(255, 245, 233, 0.60) !important; }
+html.light .bg-surface-muted\/40 { background-color: rgba(255, 245, 233, 0.45) !important; }
+html.light .bg-surface-muted\/20 { background-color: rgba(255, 245, 233, 0.28) !important; }
+
+/* bg-surface-overlay dengan opacity — dropdown, popover */
+html.light .bg-surface-overlay { background-color: #ffffff !important; }
+html.light .bg-surface-overlay\/90 { background-color: rgba(255, 255, 255, 0.95) !important; }
+html.light .bg-surface-overlay\/80 { background-color: rgba(255, 255, 255, 0.88) !important; }
+html.light .bg-surface-overlay\/60 { background-color: rgba(255, 255, 255, 0.68) !important; }
+html.light .bg-surface-overlay\/40 { background-color: rgba(255, 255, 255, 0.48) !important; }
+
+/* border-surface-border dengan opacity — semua varian */
+html.light .border-surface-border\/80 { border-color: rgba(253, 226, 196, 0.85) !important; }
+html.light .border-surface-border\/70 { border-color: rgba(253, 226, 196, 0.75) !important; }
+html.light .border-surface-border\/60 { border-color: rgba(253, 226, 196, 0.65) !important; }
+html.light .border-surface-border\/50 { border-color: rgba(253, 226, 196, 0.55) !important; }
+html.light .border-surface-border\/40 { border-color: rgba(253, 226, 196, 0.45) !important; }
+html.light .border-surface-border\/30 { border-color: rgba(253, 226, 196, 0.35) !important; }
+html.light .border-surface-border\/20 { border-color: rgba(253, 226, 196, 0.25) !important; }
+
+/* white/opacity variants yang dipakai di login card */
+html.light .bg-white\/85 { background-color: rgba(255, 255, 255, 0.90) !important; }
+html.light .border-white\/60 { border-color: rgba(253, 226, 196, 0.70) !important; }
+
+/* Grid pattern lebih subtle di light mode */
+html.light .bg-grid-cyber {
+  background-image:
+    linear-gradient(rgba(249, 115, 22, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249, 115, 22, 0.05) 1px, transparent 1px) !important;
+}
+
+/* Primary palette REMAP untuk light mode — flip dari cyan ke orange */
+html.light .text-primary-300 { color: rgb(var(--brand-300)) !important; }
+html.light .text-primary-400 { color: rgb(var(--brand-500)) !important; }
+html.light .text-primary-500 { color: rgb(var(--brand-600)) !important; }
+html.light .bg-primary-500 { background-color: rgb(var(--brand-500)) !important; }
+html.light .bg-primary-600 { background-color: rgb(var(--brand-600)) !important; }
+html.light .bg-primary-500\/15 { background-color: rgb(var(--brand-500) / 0.15) !important; }
+html.light .bg-primary-500\/10 { background-color: rgb(var(--brand-500) / 0.10) !important; }
+html.light .bg-primary-500\/20 { background-color: rgb(var(--brand-500) / 0.18) !important; }
+html.light .bg-primary-500\/5 { background-color: rgb(var(--brand-500) / 0.06) !important; }
+html.light .border-primary-500 { border-color: rgb(var(--brand-500)) !important; }
+html.light .border-primary-500\/50 { border-color: rgb(var(--brand-500) / 0.5) !important; }
+html.light .border-primary-500\/40 { border-color: rgb(var(--brand-500) / 0.4) !important; }
+html.light .border-primary-500\/30 { border-color: rgb(var(--brand-500) / 0.3) !important; }
+html.light .ring-primary-500\/30 { --tw-ring-color: rgb(var(--brand-500) / 0.3) !important; }
+html.light .focus\:ring-primary-500\/30:focus { --tw-ring-color: rgb(var(--brand-500) / 0.3) !important; }
+html.light .focus\:border-primary-500:focus { border-color: rgb(var(--brand-500)) !important; }
+html.light .hover\:border-primary-500\/40:hover { border-color: rgb(var(--brand-500) / 0.4) !important; }
+html.light .hover\:border-primary-500\/50:hover { border-color: rgb(var(--brand-500) / 0.5) !important; }
+html.light .hover\:bg-primary-500\/10:hover { background-color: rgb(var(--brand-500) / 0.1) !important; }
+html.light .hover\:bg-primary-500\/15:hover { background-color: rgb(var(--brand-500) / 0.15) !important; }
+html.light .hover\:bg-primary-500\/20:hover { background-color: rgb(var(--brand-500) / 0.18) !important; }
+html.light .hover\:bg-primary-500\/25:hover { background-color: rgb(var(--brand-500) / 0.25) !important; }
+html.light .hover\:bg-primary-500:hover { background-color: rgb(var(--brand-500)) !important; }
+html.light .hover\:bg-primary-600:hover { background-color: rgb(var(--brand-600)) !important; }
+/* Avatar gradient */
+html.light .from-primary-700 { --tw-gradient-from: rgb(var(--brand-600)) !important; --tw-gradient-to: rgb(var(--brand-600) / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+html.light .to-primary-900 { --tw-gradient-to: rgb(var(--brand-700)) !important; }
+/* CTA text on orange button — keep white */
+html.light .bg-primary-500 .text-text-inverse,
+html.light .bg-primary-500 *,
+html.light .bg-primary-600 *,
+html.light .hover\:bg-primary-600:hover * { color: #ffffff; }
+/* Login glow */
+html.light .bg-gradient-radial-primary {
+  background-image: radial-gradient(ellipse at center, rgba(249,115,22,0.18) 0%, transparent 70%) !important;
+}
+
+/* Status colors — tweak supaya lebih saturated di white background */
+html.light .text-success { color: #059669 !important; }
+html.light .text-emerald-300 { color: #059669 !important; }
+html.light .bg-success\/15 { background-color: rgba(5, 150, 105, 0.12) !important; }
+html.light .bg-emerald-500\/15 { background-color: rgba(16, 185, 129, 0.12) !important; }
+html.light .bg-emerald-500\/10 { background-color: rgba(16, 185, 129, 0.08) !important; }
+html.light .border-emerald-500\/30 { border-color: rgba(16, 185, 129, 0.35) !important; }
+html.light .border-emerald-500\/40 { border-color: rgba(16, 185, 129, 0.45) !important; }
+
+html.light .bg-amber-500\/15 { background-color: rgba(180, 83, 9, 0.12) !important; }
+html.light .bg-amber-500\/10 { background-color: rgba(180, 83, 9, 0.08) !important; }
+html.light .bg-amber-500\/5 { background-color: rgba(180, 83, 9, 0.05) !important; }
+html.light .border-amber-500\/30 { border-color: rgba(180, 83, 9, 0.3) !important; }
+html.light .border-amber-500\/40 { border-color: rgba(180, 83, 9, 0.4) !important; }
+html.light .border-amber-500\/60 { border-color: rgba(180, 83, 9, 0.55) !important; }
+html.light .border-amber-500\/70 { border-color: rgba(180, 83, 9, 0.65) !important; }
+html.light .hover\:border-amber-500\/60:hover { border-color: rgba(180, 83, 9, 0.55) !important; }
+html.light .hover\:border-amber-500\/70:hover { border-color: rgba(180, 83, 9, 0.65) !important; }
+html.light .text-amber-400 { color: #b45309 !important; }
+html.light .bg-amber-500\/20 { background-color: rgba(180, 83, 9, 0.18) !important; }
+html.light .hover\:bg-amber-500\/25:hover { background-color: rgba(180, 83, 9, 0.22) !important; }
+
+html.light .bg-rose-500\/15 { background-color: rgba(190, 18, 60, 0.12) !important; }
+html.light .bg-rose-500\/10 { background-color: rgba(190, 18, 60, 0.08) !important; }
+html.light .bg-rose-500\/5 { background-color: rgba(190, 18, 60, 0.05) !important; }
+html.light .border-rose-500\/30 { border-color: rgba(190, 18, 60, 0.3) !important; }
+html.light .border-rose-500\/40 { border-color: rgba(190, 18, 60, 0.4) !important; }
+html.light .border-rose-500\/60 { border-color: rgba(190, 18, 60, 0.55) !important; }
+html.light .border-rose-500\/70 { border-color: rgba(190, 18, 60, 0.65) !important; }
+html.light .hover\:border-rose-500\/60:hover { border-color: rgba(190, 18, 60, 0.55) !important; }
+html.light .hover\:border-rose-500\/70:hover { border-color: rgba(190, 18, 60, 0.65) !important; }
+html.light .text-rose-400 { color: #be123c !important; }
+
+html.light .text-blue-300 { color: #1d4ed8 !important; }
+html.light .bg-blue-500\/15 { background-color: rgba(29, 78, 216, 0.12) !important; }
+
+html.light .text-violet-300 { color: #6d28d9 !important; }
+html.light .bg-violet-500\/15 { background-color: rgba(109, 40, 217, 0.12) !important; }
+
+html.light .text-cyan-300 { color: #0e7490 !important; }
+html.light .bg-cyan-500\/15 { background-color: rgba(14, 116, 144, 0.12) !important; }
+html.light .bg-cyan-500\/5 { background-color: rgba(14, 116, 144, 0.05) !important; }
+html.light .border-cyan-500\/40 { border-color: rgba(14, 116, 144, 0.4) !important; }
+html.light .border-cyan-500\/70 { border-color: rgba(14, 116, 144, 0.65) !important; }
+html.light .hover\:border-cyan-500\/70:hover { border-color: rgba(14, 116, 144, 0.65) !important; }
+
+html.light .bg-emerald-500\/20 { background-color: rgba(16, 185, 129, 0.18) !important; }
+html.light .hover\:bg-emerald-500\/25:hover { background-color: rgba(16, 185, 129, 0.22) !important; }
+html.light .bg-emerald-500\/5 { background-color: rgba(16, 185, 129, 0.06) !important; }
+html.light .text-emerald-200 { color: #047857 !important; }
+
+html.light .bg-violet-500\/20 { background-color: rgba(109, 40, 217, 0.18) !important; }
+html.light .hover\:bg-violet-500\/25:hover { background-color: rgba(109, 40, 217, 0.22) !important; }
+html.light .bg-violet-500\/10 { background-color: rgba(109, 40, 217, 0.08) !important; }
+html.light .border-violet-500\/30 { border-color: rgba(109, 40, 217, 0.3) !important; }
+
+html.light .bg-blue-500\/10 { background-color: rgba(29, 78, 216, 0.08) !important; }
+html.light .border-blue-500\/30 { border-color: rgba(29, 78, 216, 0.3) !important; }
+html.light .text-blue-200 { color: #1e40af !important; }
+
+html.light .text-orange-300 { color: #c2410c !important; }
+html.light .bg-orange-500\/15 { background-color: rgba(194, 65, 12, 0.12) !important; }
+
+html.light .text-amber-200 { color: #92400e !important; }
+
+/* Glow shadows lebih halus di light mode — kalau tidak terlalu silau */
+html.light .shadow-glow-primary {
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.25), 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+html.light .shadow-glow-sm {
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2) !important;
+}
+html.light .shadow-card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 20px rgba(0,0,0,0.04) !important;
+}
+html.light .shadow-card-hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.06), 0 10px 30px rgba(0,0,0,0.08) !important;
+}
+
+/* bg-surface-overlay dengan opacity — progress bars, hover rows, dropdowns */
+html.light .bg-surface-overlay { background-color: #f5ede3 !important; }
+html.light .bg-surface-overlay\/90 { background-color: rgba(245, 237, 227, 0.95) !important; }
+html.light .bg-surface-overlay\/80 { background-color: rgba(245, 237, 227, 0.88) !important; }
+html.light .bg-surface-overlay\/60 { background-color: rgba(245, 237, 227, 0.68) !important; }
+html.light .bg-surface-overlay\/40 { background-color: rgba(245, 237, 227, 0.48) !important; }
+html.light .bg-surface-overlay\/20 { background-color: rgba(245, 237, 227, 0.28) !important; }
+html.light .hover\:bg-surface-overlay\/40:hover { background-color: rgba(245, 237, 227, 0.55) !important; }
+html.light .hover\:bg-surface-overlay:hover { background-color: #f5ede3 !important; }
+
+/* TopBar & Sidebar dropdown — butuh shadow lebih kuat di light mode */
+html.light .shadow-card { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06) !important; }
+html.light .shadow-card-hover { box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 10px 30px rgba(0,0,0,0.10) !important; }
+
+/* Dropdown/popover panel (TopBar user menu, NotificationBell) */
+html.light .shadow-xl { box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06) !important; }
+html.light .shadow-2xl { box-shadow: 0 16px 48px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.07) !important; }
+
+/* hover:bg-surface-raised (bare, no opacity) */
+html.light .hover\:bg-surface-raised:hover { background-color: rgba(255, 255, 255, 0.9) !important; }
+
+/* QuickActions bg-surface-base/60 hover:bg-surface-raised/80 */
+html.light .hover\:bg-surface-raised\/80:hover { background-color: rgba(255, 255, 255, 0.90) !important; }
+
+/* Safe area for notched phones (iPhone X+) */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0a1520; }
+::-webkit-scrollbar-thumb { background: #1a3045; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #00b8b8; }
+html.light ::-webkit-scrollbar-track { background: #fff5e9; }
+html.light ::-webkit-scrollbar-thumb { background: #fde2c4; border-radius: 5px; }
+html.light ::-webkit-scrollbar-thumb:hover { background: #fb923c; }
+
+/* Selection */
+::selection {
+  background: rgba(0, 184, 184, 0.4);
+  color: #e8f4f8;
+}
+html.light ::selection {
+  background: rgba(249, 115, 22, 0.25);
+  color: #1a1a2e;
+}
+
+/* ── Reusable utilities ─────────────────────────────────────────────── */
+
+.podium-gold {
+  background: linear-gradient(135deg, #ffd54f 0%, #ff8f00 100%);
+  color: #2b1700;
+}
+.podium-silver {
+  background: linear-gradient(135deg, #e0e0e0 0%, #9e9e9e 100%);
+  color: #1a1a1a;
+}
+.podium-bronze {
+  background: linear-gradient(135deg, #d2853d 0%, #8d4a14 100%);
+  color: #ffffff;
+}
+
+@keyframes softPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(0, 230, 118, 0); }
+}
+.animate-soft-pulse { animation: softPulse 2.4s ease-out infinite; }
+
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-radar { animation: radarSweep 4s linear infinite; transform-origin: center; }
+
+@keyframes tickerFlip {
+  0% { transform: translateY(20%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.animate-ticker { animation: tickerFlip 0.5s ease forwards; }
+
+
+/* ── Role-specific accent — light mode juga ikut shift ke orange variant ── */
+:root {
+  --role-accent: 0 184 184;
+  --role-accent-soft: 0 242 242;
+}
+html[data-role="super_admin"] {
+  --role-accent: 139 92 246;
+  --role-accent-soft: 167 139 250;
+}
+html[data-role="hr"] {
+  --role-accent: 244 63 94;
+  --role-accent-soft: 251 113 133;
+}
+html[data-role="admin"] {
+  --role-accent: 0 184 184;
+  --role-accent-soft: 0 242 242;
+}
+
+/* Light mode shifts — masih distinctive per role tapi pakai shade yang work di white bg */
+html.light[data-role="super_admin"] {
+  --role-accent: 124 58 237;       /* violet-600 darker */
+  --role-accent-soft: 109 40 217;  /* violet-700 */
+}
+html.light[data-role="hr"] {
+  --role-accent: 225 29 72;         /* rose-600 darker */
+  --role-accent-soft: 190 18 60;   /* rose-700 */
+}
+html.light[data-role="admin"],
+html.light:not([data-role]) {
+  --role-accent: 234 88 12;         /* orange-600 */
+  --role-accent-soft: 249 115 22;  /* orange-500 */
+}
+
+.role-accent-text { color: rgb(var(--role-accent-soft)); }
+.role-accent-bg-soft { background: rgb(var(--role-accent) / 0.12); }
+.role-accent-border { border-color: rgb(var(--role-accent) / 0.4); }
+.role-accent-glow { box-shadow: 0 0 24px rgb(var(--role-accent) / 0.25); }
+.role-accent-bar { background: linear-gradient(90deg, rgb(var(--role-accent)), rgb(var(--role-accent-soft))); }
+
+html.light .role-accent-glow { box-shadow: 0 4px 16px rgb(var(--role-accent) / 0.18) !important; }

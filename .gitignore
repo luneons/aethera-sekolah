@@ -1,0 +1,57 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/.pytest_cache/
+*.egg-info/
+
+# ── Node.js ───────────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+wa-gateway/node_modules/
+
+# ── ML Models (downloaded at runtime) ────────────────────────────────────────
+backend/models/
+
+# ── Environment files (RAHASIA - jangan commit!) ──────────────────────────────
+backend/.env
+frontend/.env.local
+.env
+.env.local
+.env.production
+
+# ── Database ──────────────────────────────────────────────────────────────────
+backend/aethera.db
+*.db
+*.sqlite
+
+# ── Storage (foto absensi - terlalu besar untuk git) ─────────────────────────
+backend/storage/snapshots/
+!backend/storage/snapshots/.gitkeep
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+backend/.uvicorn-*.log
+frontend/.next-dev.*.log
+back.log
+front.log
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ── Temp files ────────────────────────────────────────────────────────────────
+*.tmp
+*.temp
+check_migration.py
+test_mode_endpoint.py
+seed_school_classes.py

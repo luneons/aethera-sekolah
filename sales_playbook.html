@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root{
+    --navy:#07121b; --navy2:#0a1722; --cyan:#00b8b8; --cyan-br:#00d4d4;
+    --ink:#13202a; --slate:#52646f; --muted:#8b9ba8; --line:#dce3e8;
+    --panel:#f3f7f9; --panel2:#eaf6f6; --amber:#e08a1e; --green:#1b8f5a; --rose:#c0392b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',sans-serif;color:var(--ink);font-size:10pt;line-height:1.42;}
+  .page{width:210mm;min-height:297mm;padding:13mm 15mm 10mm;position:relative;page-break-after:always;background:#fff;display:flex;flex-direction:column;}
+  .page:last-child{page-break-after:auto;}
+  .page .foot{margin-top:auto;}
+
+  /* cover */
+  .cover{background:radial-gradient(120% 70% at 50% -5%, rgba(0,184,184,.22), transparent 56%),linear-gradient(180deg,#06121b,#04080c);color:#eafdfd;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+  .cover .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,184,184,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,184,184,.08) 1px,transparent 1px);background-size:14mm 14mm;}
+  .cover .br{position:absolute;width:22mm;height:22mm;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .disp{font-family:'Space Grotesk',sans-serif;}
+
+  h1.title{font-family:'Space Grotesk';font-weight:700;font-size:34pt;line-height:1.05;margin:6mm 0 3mm;text-shadow:0 0 18mm rgba(0,212,212,.4);}
+  .eyebrow{font-family:'JetBrains Mono';font-size:10pt;letter-spacing:.34em;color:var(--cyan-br);}
+
+  h2{font-family:'Space Grotesk';font-weight:700;font-size:17pt;color:var(--ink);margin:0 0 2mm;padding-bottom:1.5mm;border-bottom:2px solid var(--cyan);}
+  .chap-label{font-family:'JetBrains Mono';font-size:8.5pt;letter-spacing:.18em;color:var(--cyan);text-transform:uppercase;margin-bottom:1mm;}
+  h3{font-family:'Space Grotesk';font-weight:600;font-size:12pt;color:var(--cyan);margin:4mm 0 1.5mm;}
+  h4{font-family:'Space Grotesk';font-weight:600;font-size:10.5pt;color:var(--ink);margin:3mm 0 1mm;}
+  p{margin:0 0 2mm;}
+  ul,ol{margin:0 0 2.5mm 5.5mm;}
+  li{margin-bottom:1mm;}
+  .lead{color:var(--slate);font-size:10.5pt;}
+  strong{color:var(--ink);}
+  .cyan{color:var(--cyan);} .amber{color:var(--amber);} .green{color:var(--green);} .rose{color:var(--rose);}
+
+  .box{border:1px solid var(--line);border-left:4px solid var(--cyan);background:var(--panel);border-radius:3mm;padding:3mm 4mm;margin:2.5mm 0;}
+  .box.warn{border-left-color:var(--rose);background:#fbeeea;}
+  .box.tip{border-left-color:var(--green);background:#eaf6ef;}
+  .box .lbl{font-family:'JetBrains Mono';font-size:8pt;font-weight:700;letter-spacing:.1em;color:var(--cyan);}
+  .box.warn .lbl{color:var(--rose);} .box.tip .lbl{color:var(--green);}
+
+  /* script bubble */
+  .script{background:var(--navy);color:#dbeff2;border-radius:2.5mm;padding:3mm 4mm;margin:2mm 0;font-size:9.5pt;line-height:1.5;border-left:4px solid var(--cyan);}
+  .script .who{font-family:'JetBrains Mono';font-size:7.5pt;color:var(--cyan-br);letter-spacing:.1em;display:block;margin-bottom:0.8mm;}
+  .script.you{border-left-color:var(--amber);}
+  .script.you .who{color:#f0b86a;}
+
+  table{width:100%;border-collapse:collapse;margin:2.5mm 0;font-size:9.5pt;}
+  th{background:var(--navy);color:#eafdfd;text-align:left;padding:2mm 2.5mm;font-family:'JetBrains Mono';font-size:8pt;letter-spacing:.04em;font-weight:700;}
+  td{padding:2mm 2.5mm;border-bottom:1px solid var(--line);vertical-align:top;}
+  tr:nth-child(even) td{background:var(--panel);}
+
+  .pill{display:inline-block;padding:1mm 3mm;border-radius:99px;font-family:'JetBrains Mono';font-size:8pt;font-weight:700;background:var(--panel2);color:var(--cyan);border:1px solid rgba(0,184,184,.3);}
+  .num{display:inline-flex;width:6mm;height:6mm;border-radius:50%;background:var(--cyan);color:#fff;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:9pt;margin-right:2mm;}
+
+  .toc-item{display:flex;justify-content:space-between;padding:2mm 0;border-bottom:1px dotted var(--line);}
+  .toc-item .t{font-weight:600;} .toc-item .c{font-family:'JetBrains Mono';color:var(--cyan);}
+  .foot{margin-top:8mm;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:7.5pt;color:var(--muted);border-top:1px solid var(--line);padding-top:2mm;}
+  .two{display:flex;gap:5mm;} .two>div{flex:1;}
+  .card{border:1px solid var(--line);border-radius:3mm;padding:4mm;background:#fff;}
+  .card h4{margin-top:0;}
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="page cover">
+  <div class="grid"></div>
+  <div class="br" style="left:14mm;top:14mm;border-left:2px solid var(--cyan);border-top:2px solid var(--cyan);"></div>
+  <div class="br" style="right:14mm;top:14mm;border-right:2px solid var(--cyan);border-top:2px solid var(--cyan);"></div>
+  <div class="br" style="left:14mm;bottom:14mm;border-left:2px solid var(--cyan);border-bottom:2px solid var(--cyan);"></div>
+  <div class="br" style="right:14mm;bottom:14mm;border-right:2px solid var(--cyan);border-bottom:2px solid var(--cyan);"></div>
+  <div style="position:relative;">
+    <div class="eyebrow">PANDUAN PENJUALAN · SALES PLAYBOOK</div>
+    <h1 class="title">Cara Menjual<br/>AETHERA</h1>
+    <div style="width:40mm;height:2px;margin:5mm auto;background:linear-gradient(90deg,transparent,var(--cyan),transparent);"></div>
+    <p style="font-family:'Inter';font-weight:300;font-size:13pt;color:#9fc3cf;max-width:140mm;">
+      Panduan lengkap menawarkan ke sekolah: tatap muka, chat, media sosial,
+      grup, video, cara ngomong, sampai cara nego &amp; closing.
+    </p>
+    <div style="margin-top:14mm;font-family:'JetBrains Mono';font-size:9.5pt;color:#8baebe;">
+      Aethera · aethera.my.id · 0812-9315-9011
+    </div>
+  </div>
+</div>
+
+<!-- ============ DAFTAR ISI ============ -->
+<div class="page">
+  <div class="chap-label">Navigasi</div>
+  <h2>Daftar Isi</h2>
+  <div class="toc-item"><span class="t">01 · Mindset Dasar — Jual Solusi, Bukan Fitur</span><span class="c">hal 3</span></div>
+  <div class="toc-item"><span class="t">02 · Kenali Calon Pembeli &amp; Pengambil Keputusan</span><span class="c">hal 4</span></div>
+  <div class="toc-item"><span class="t">03 · Senjata yang Sudah Ada &amp; yang Perlu Disiapkan</span><span class="c">hal 5</span></div>
+  <div class="toc-item"><span class="t">04 · Menawarkan Tatap Muka (Face to Face)</span><span class="c">hal 6</span></div>
+  <div class="toc-item"><span class="t">05 · Menawarkan Lewat Chat (WhatsApp Pribadi)</span><span class="c">hal 8</span></div>
+  <div class="toc-item"><span class="t">06 · Menawarkan Lewat Media Sosial</span><span class="c">hal 10</span></div>
+  <div class="toc-item"><span class="t">07 · Menawarkan Lewat Grup (Group to Group)</span><span class="c">hal 12</span></div>
+  <div class="toc-item"><span class="t">08 · Video Promosi — Flow, Alat &amp; Skrip Lengkap</span><span class="c">hal 13</span></div>
+  <div class="toc-item"><span class="t">09 · Cara Ngomong — Skrip Kata-per-Kata</span><span class="c">hal 16</span></div>
+  <div class="toc-item"><span class="t">10 · Cara Nego &amp; Tawar-Menawar Harga</span><span class="c">hal 18</span></div>
+  <div class="toc-item"><span class="t">11 · Closing &amp; Follow-Up</span><span class="c">hal 20</span></div>
+  <div class="toc-item"><span class="t">12 · Checklist &amp; Kalender Konten 30 Hari</span><span class="c">hal 21</span></div>
+  <div class="box tip" style="margin-top:8mm;">
+    <span class="lbl">CARA PAKAI</span>
+    <p style="margin-top:1.5mm;margin-bottom:0;">Baca Bab 01–03 dulu (fondasi). Lalu pilih kanal yang mau kamu pakai (Bab 04–08).
+    Bab 09–11 dipakai di semua kanal. Bab 12 untuk eksekusi harian. Skrip yang ada di kotak gelap
+    boleh disalin langsung — sesuaikan nama sekolah &amp; gaya bicaramu.</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>aethera.my.id</span></div>
+</div>
+
+<!-- ============ BAB 01 — MINDSET ============ -->
+<div class="page">
+  <div class="chap-label">Bab 01 · Fondasi</div>
+  <h2>Mindset Dasar — Jual Solusi, Bukan Fitur</h2>
+  <p class="lead">Kesalahan paling umum: langsung membanggakan fitur (“Ada absensi AI, ada SPP online, ada 14 modul!”).
+  Kepala sekolah tidak beli fitur — mereka beli <strong>hasil</strong>: hemat waktu, sekolah terlihat modern, orang tua tenang.</p>
+
+  <h3>Aturan emas</h3>
+  <ul>
+    <li><strong>Mulai dari masalah mereka, bukan produk kamu.</strong> Tanya dulu, baru tawarkan.</li>
+    <li><strong>Satu manfaat utama per orang.</strong> Kepsek → kontrol &amp; citra. TU → hemat kerja. Ortu → tenang.</li>
+    <li><strong>Tunjukkan, jangan cuma cerita.</strong> Demo 2 menit &gt; 20 menit ngomong.</li>
+    <li><strong>Jujur.</strong> Jangan klaim “dipakai 100 sekolah” kalau belum. Pakai sudut “Program Sekolah Perintis”.</li>
+  </ul>
+
+  <h3>Rumus kalimat: Fitur → Manfaat</h3>
+  <table>
+    <tr><th>Jangan bilang (fitur)</th><th>Bilang ini (manfaat)</th></tr>
+    <tr><td>“Ada absensi pengenalan wajah.”</td><td>“Staf TU nggak perlu rekap absen manual tiap hari — datanya otomatis.”</td></tr>
+    <tr><td>“Ada notifikasi WhatsApp.”</td><td>“Orang tua langsung tahu anaknya sampai sekolah — tanpa aplikasi tambahan.”</td></tr>
+    <tr><td>“Ada pembayaran SPP online.”</td><td>“Orang tua bayar dari rumah, uang langsung tercatat, nggak ada antre di loket.”</td></tr>
+    <tr><td>“Ada dashboard &amp; AI insight.”</td><td>“Bapak bisa lihat kondisi sekolah tiap pagi tanpa nunggu laporan staf.”</td></tr>
+  </table>
+
+  <div class="box">
+    <span class="lbl">RUMUS AJAIB</span>
+    <p style="margin:1.5mm 0 0;">“<strong>Karena</strong> [fitur], <strong>jadi</strong> Bapak/Ibu [manfaat], <strong>tanpa</strong> [rasa sakit yang hilang].”<br/>
+    Contoh: “Karena absensinya otomatis, jadi Ibu nggak perlu pegang buku absen lagi, tanpa takut data hilang.”</p>
+  </div>
+
+  <h3>3 emosi yang menjual ke sekolah</h3>
+  <div class="two">
+    <div class="card"><h4>1. Gengsi / Citra</h4><p style="margin:0;font-size:10pt;">“Sekolah Bapak jadi yang pertama pakai absensi AI di wilayah ini.”</p></div>
+    <div class="card"><h4>2. Rasa Aman</h4><p style="margin:0;font-size:10pt;">“Data aman, ada garansi 30 hari, bisa coba dulu gratis.”</p></div>
+  </div>
+  <div class="card" style="margin-top:5mm;"><h4>3. Hemat (waktu &amp; tenaga)</h4><p style="margin:0;font-size:10pt;">“Pekerjaan yang tadinya berjam-jam jadi otomatis. Satu sistem, bukan lima aplikasi.”</p></div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>3</span></div>
+</div>
+
+<!-- ============ BAB 02 — TARGET ============ -->
+<div class="page">
+  <div class="chap-label">Bab 02 · Fondasi</div>
+  <h2>Kenali Calon Pembeli &amp; Pengambil Keputusan</h2>
+  <p class="lead">Sebelum menawarkan, tahu dulu: siapa yang memutuskan, dan apa yang mereka pedulikan. Salah sasaran = buang waktu.</p>
+
+  <h3>Siapa yang ditemui</h3>
+  <table>
+    <tr><th>Jenis sekolah</th><th>Pengambil keputusan</th><th>Pendekatan</th></tr>
+    <tr><td>Swasta / Yayasan</td><td>Ketua Yayasan + Kepsek</td><td>Tercepat — anggaran fleksibel. Tekankan citra &amp; efisiensi.</td></tr>
+    <tr><td>Negeri</td><td>Kepsek + Bendahara/Komite</td><td>Proses lebih panjang (dana BOS/komite). Sabar &amp; formal.</td></tr>
+    <tr><td>Pesantren / IT</td><td>Mudir/Pimpinan + Bendahara</td><td>Tekankan komunikasi ortu &amp; kemandirian data.</td></tr>
+    <tr><td>Sekolah baru</td><td>Pemilik / Pendiri</td><td>Suka tampil modern — jual citra &amp; “beda dari yang lain”.</td></tr>
+  </table>
+
+  <div class="box tip">
+    <span class="lbl">JANGAN LUPA OPERATOR / STAF TU</span>
+    <p style="margin:1.5mm 0 0;">Mereka yang paling merasakan beban kerja manual. Jadikan mereka <strong>sekutu di dalam</strong>:
+    tunjukkan betapa Aethera memangkas kerja mereka. Operator sering yang merekomendasikan ke pimpinan.</p>
+  </div>
+
+  <h3>Apa yang dipedulikan tiap orang</h3>
+  <table>
+    <tr><th>Peran</th><th>Yang mereka pikirkan</th><th>Kalimat pemikat</th></tr>
+    <tr><td>Kepala Sekolah</td><td>Citra sekolah, kontrol, laporan</td><td>“Bapak bisa pantau seluruh sekolah dari HP.”</td></tr>
+    <tr><td>Bendahara</td><td>Uang masuk rapi, tidak selisih</td><td>“SPP tercatat otomatis, rekap keuangan real-time.”</td></tr>
+    <tr><td>Guru / Wali kelas</td><td>Kerja jangan nambah</td><td>“Malah memangkas kerja — absen &amp; nilai otomatis.”</td></tr>
+    <tr><td>Komite / Ortu</td><td>Manfaat buat anak</td><td>“Orang tua dapat kabar anak real-time, bayar dari rumah.”</td></tr>
+  </table>
+
+  <h3>Tanda calon yang “panas” (prioritaskan)</h3>
+  <ul>
+    <li>Sekolah swasta/yayasan yang sedang berkembang &amp; ingin tampil beda.</li>
+    <li>Sekolah yang baru kena masalah (absensi kacau, ortu komplain, SPP nunggak).</li>
+    <li>Ada kenalan orang dalam (guru/operator) yang bisa kenalkan ke pimpinan.</li>
+  </ul>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>4</span></div>
+</div>
+
+<!-- ============ BAB 03 — SENJATA ============ -->
+<div class="page">
+  <div class="chap-label">Bab 03 · Persiapan</div>
+  <h2>Senjata yang Sudah Ada &amp; yang Perlu Disiapkan</h2>
+  <p class="lead">Kamu sudah punya banyak amunisi. Pakai yang tepat di momen yang tepat.</p>
+
+  <h3>Yang SUDAH ada (siap pakai)</h3>
+  <table>
+    <tr><th>Aset</th><th>Dipakai untuk</th></tr>
+    <tr><td>Brosur 1 halaman (PDF)</td><td>Kontak pertama — kirim WA / tinggalkan setelah ketemu.</td></tr>
+    <tr><td>Proposal lengkap (DOCX)</td><td>Dikirim setelah demo, untuk dibahas internal &amp; anggaran.</td></tr>
+    <tr><td>Presentasi (PPT)</td><td>Saat demo tatap muka / online (Zoom).</td></tr>
+    <tr><td>Surat Penawaran resmi</td><td>Untuk arsip bendahara / administrasi.</td></tr>
+    <tr><td>Demo live (aethera.my.id)</td><td>“Moment wow” — tunjukkan langsung, pakai akun demo.</td></tr>
+    <tr><td>Aplikasi web + Android</td><td>Bukti nyata produk jalan, bukan janji.</td></tr>
+  </table>
+
+  <h3>Yang PERLU kamu siapkan (PR)</h3>
+  <ul>
+    <li><strong>Video promosi pendek</strong> (30–60 detik) &amp; video demo (2–3 menit) — flow lengkap di Bab 08.</li>
+    <li><strong>Akun media sosial</strong> brand: Instagram, TikTok, Facebook Page (nama “Aethera”).</li>
+    <li><strong>5–10 gambar konten</strong> untuk feed (bisa pakai elemen mockup yang sudah ada).</li>
+    <li><strong>Badan usaha + rekening</strong> (CV/PT, NPWP) — untuk transaksi resmi (urus paralel).</li>
+    <li><strong>Daftar 20–30 sekolah target</strong> + kontak pengambil keputusan.</li>
+  </ul>
+
+  <div class="box">
+    <span class="lbl">URUTAN PEMAKAIAN AMUNISI</span>
+    <p style="margin:1.5mm 0 0;">Brosur/video pendek (menarik perhatian) → Demo live + PPT (meyakinkan) → Proposal + Surat Penawaran
+    (untuk diputuskan) → Negosiasi → Closing. Jangan kirim proposal 30 halaman ke orang yang belum kenal — terlalu berat.</p>
+  </div>
+
+  <h3>Aturan tiap kanal (ringkas)</h3>
+  <table>
+    <tr><th>Kanal</th><th>Tujuan utama</th><th>Amunisi</th></tr>
+    <tr><td>Tatap muka</td><td>Bangun percaya + demo</td><td>PPT, demo live, brosur cetak</td></tr>
+    <tr><td>Chat WA</td><td>Dapat jadwal demo</td><td>Brosur PDF, video pendek</td></tr>
+    <tr><td>Media sosial</td><td>Bangun awareness &amp; masuk DM</td><td>Video, gambar konten</td></tr>
+    <tr><td>Grup</td><td>Jangkau banyak sekaligus</td><td>Brosur, video, link demo</td></tr>
+  </table>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>5</span></div>
+</div>
+
+<!-- ============ BAB 04 — TATAP MUKA ============ -->
+<div class="page">
+  <div class="chap-label">Bab 04 · Kanal</div>
+  <h2>Menawarkan Tatap Muka (Face to Face)</h2>
+  <p class="lead">Kanal paling ampuh untuk closing. Orang beli dari orang yang mereka percaya — dan kepercayaan paling cepat dibangun langsung.</p>
+
+  <h3>Persiapan sebelum datang</h3>
+  <ul>
+    <li>Riset singkat: nama kepsek, jumlah siswa, jenis sekolah (untuk rekomendasi paket).</li>
+    <li>Bawa: laptop (sudah login akun demo, tab demo kebuka), HP (untuk demo absen wajah), brosur cetak, kartu nama.</li>
+    <li>Pastikan ada koneksi internet (atau pakai hotspot HP sendiri — jangan andalkan WiFi sekolah).</li>
+    <li>Datang rapi, tepat waktu, senyum. Kesan pertama 80% penampilan &amp; sikap.</li>
+  </ul>
+
+  <h3>Alur pertemuan (15–20 menit)</h3>
+  <p><span class="num">1</span><strong>Buka dengan basa-basi + pujian tulus</strong> (1 menit). “Sekolahnya bersih ya Pak, kelihatan terurus.”</p>
+  <p><span class="num">2</span><strong>Tanya, jangan langsung jualan</strong> (3 menit). Gali masalah mereka dulu.</p>
+  <p><span class="num">3</span><strong>Hubungkan masalah → solusi</strong> (2 menit). “Nah, yang Bapak keluhkan tadi itu justru yang kami selesaikan.”</p>
+  <p><span class="num">4</span><strong>Demo singkat</strong> (5–7 menit). Tunjukkan, jangan banyak teori. Fokus 3 fitur paling relevan.</p>
+  <p><span class="num">5</span><strong>Tutup dengan langkah jelas</strong> (2 menit). “Boleh saya kirim proposal &amp; penawaran hari ini?”</p>
+
+  <h3>Pertanyaan pembuka (untuk menggali masalah)</h3>
+  <div class="script you"><span class="who">KAMU</span>
+    “Sebelum saya jelaskan, boleh saya tahu dulu Pak — selama ini absensi siswa &amp; gurunya pakai apa? Ada kendala nggak?”</div>
+  <div class="script you"><span class="who">KAMU</span>
+    “Kalau orang tua mau tahu anaknya hadir atau tidak, biasanya gimana caranya sekarang?”</div>
+  <div class="script you"><span class="who">KAMU</span>
+    “Untuk SPP, pembayarannya masih manual di sekolah atau sudah online Pak?”</div>
+
+  <div class="box tip">
+    <span class="lbl">RAHASIA</span>
+    <p style="margin:1.5mm 0 0;">Diam &amp; dengarkan setelah bertanya. Biarkan mereka cerita masalahnya. Tiap masalah yang mereka sebut =
+    peluru untuk kamu: “Nah itu, di Aethera...”. Jangan memotong.</p>
+  </div>
+
+  <h3>Bahasa tubuh</h3>
+  <ul>
+    <li>Kontak mata, badan condong sedikit ke depan (tertarik), jangan menyilang tangan.</li>
+    <li>Saat demo, putar laptop menghadap mereka — ajak mereka pegang/coba sendiri.</li>
+    <li>Bicara tenang &amp; jelas, jangan terburu. Percaya diri tapi tidak sombong.</li>
+  </ul>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>6</span></div>
+</div>
+
+<!-- ============ BAB 04 lanjutan ============ -->
+<div class="page">
+  <div class="chap-label">Bab 04 · Kanal (lanjutan)</div>
+  <h3>Urutan demo yang bikin “wow”</h3>
+  <p><span class="num">1</span><strong>Dashboard kepsek</strong> — “Ini yang Bapak lihat tiap pagi, angka kehadiran langsung, nggak nunggu laporan.”</p>
+  <p><span class="num">2</span><strong>Absen wajah</strong> (pakai HP, peragakan ke diri sendiri) — momen paling mengesankan.</p>
+  <p><span class="num">3</span><strong>Notifikasi WhatsApp ortu</strong> — “Begitu anak absen, orang tua langsung dapat ini.”</p>
+  <p><span class="num">4</span><strong>Bayar SPP online</strong> — tunjukkan status berubah jadi LUNAS otomatis.</p>
+  <p><span class="num">5</span><strong>Tutup</strong> dengan ringkasan AI / leaderboard sesuai minat mereka.</p>
+
+  <h3>Kalimat penutup pertemuan (pilih satu)</h3>
+  <div class="script you"><span class="who">KAMU — soft</span>
+    “Gimana Pak, menarik? Kalau berkenan, saya kirimkan proposal lengkap &amp; penawaran khususnya hari ini, lalu kita atur jadwal lanjutan.”</div>
+  <div class="script you"><span class="who">KAMU — dorong komitmen</span>
+    “Untuk Program Sekolah Perintis ada harga khusus dan gratis biaya setup. Kalau Bapak tertarik, saya bantu siapkan dari sekarang. Kira-kira kapan kita bisa lanjut bahas detailnya?”</div>
+
+  <div class="box warn">
+    <span class="lbl">JANGAN</span>
+    <p style="margin:1.5mm 0 0;">Jangan akhiri dengan menggantung (“Ya nanti saya kabari” dari kamu). Selalu kamu yang menawarkan langkah berikutnya
+    + tanggal. Jangan memaksa kalau mereka belum siap — tapi selalu sepakati “apa selanjutnya”.</p>
+  </div>
+
+  <h3>Kalau ditolak / belum tertarik</h3>
+  <ul>
+    <li>Tetap ramah &amp; profesional. Penolakan hari ini bukan selamanya.</li>
+    <li>Minta izin tinggalkan brosur + kontak: “Nggak apa-apa Pak, ini brosurnya, mungkin nanti dibutuhkan.”</li>
+    <li>Minta referral: “Bapak kenal sekolah lain yang mungkin tertarik?”</li>
+    <li>Catat &amp; follow-up 1–2 bulan lagi.</li>
+  </ul>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>7</span></div>
+</div>
+
+<!-- ============ BAB 05 — CHAT ============ -->
+<div class="page">
+  <div class="chap-label">Bab 05 · Kanal</div>
+  <h2>Menawarkan Lewat Chat (WhatsApp Pribadi)</h2>
+  <p class="lead">Tujuan chat BUKAN langsung closing — tapi dapat jadwal demo / izin kirim materi. Pesan harus singkat, sopan, dan ada ajakan jelas.</p>
+
+  <h3>Aturan chat yang tidak boleh dilanggar</h3>
+  <ul>
+    <li><strong>Jangan kirim paragraf panjang.</strong> Maksimal 4–5 baris di pesan pertama.</li>
+    <li><strong>Personalisasi.</strong> Sebut nama &amp; nama sekolahnya. Jangan terasa copy-paste massal.</li>
+    <li><strong>Satu ajakan saja</strong> (CTA): minta jadwal demo ATAU izin kirim brosur.</li>
+    <li><strong>Jangan spam.</strong> Follow-up maksimal 3–4 kali, beri jeda 2–3 hari.</li>
+    <li>Kirim di jam kerja (08.00–16.00), hindari jam istirahat/sholat &amp; malam.</li>
+  </ul>
+
+  <h3>Template 1 — Pesan pembuka (kenalan)</h3>
+  <div class="script"><span class="who">SALIN INI</span>
+    Assalamualaikum / Selamat pagi Bapak/Ibu [Nama] 🙏<br/>
+    Mohon izin memperkenalkan diri, saya Andy dari <strong>Aethera</strong> — platform manajemen sekolah
+    (absensi wajah AI, SPP online, nilai &amp; rapor, sampai notifikasi WhatsApp ke orang tua) dalam satu aplikasi.<br/><br/>
+    Boleh saya kirimkan brosur singkat 1 halaman untuk [Nama Sekolah]? Atau kalau berkenan, saya bisa
+    tunjukkan demo langsung ~15 menit di waktu yang Bapak/Ibu tentukan. Terima kasih 🙇</div>
+
+  <h3>Template 2 — Follow-up (belum dibalas, +2 hari)</h3>
+  <div class="script"><span class="who">SALIN INI</span>
+    Selamat siang Bapak/Ibu [Nama], menindaklanjuti pesan saya kemarin soal Aethera.
+    Sekolah bisa langsung coba demonya tanpa instalasi di <strong>aethera.my.id</strong>.<br/>
+    Kalau ada waktu 15 menit pekan ini, saya senang menjelaskan langsung. Kira-kira kapan luang nggih?</div>
+
+  <h3>Template 3 — Kirim materi (setelah diizinkan)</h3>
+  <div class="script"><span class="who">SALIN INI</span>
+    Baik Pak, terima kasih 🙏 Ini brosur singkatnya [lampirkan PDF].<br/>
+    Kalau mau lihat langsung tampilannya, ada video 1 menit ini [link video].<br/>
+    Untuk demo lengkap, saya siap kapan saja Bapak ada waktu.</div>
+
+  <div class="box tip">
+    <span class="lbl">TIPS BALAS CEPAT</span>
+    <p style="margin:1.5mm 0 0;">Begitu dibalas, RESPON dalam &lt;1 jam selama jam kerja. Minat itu cepat dingin. Kalau mereka tanya harga di chat,
+    jangan langsung sebut angka — arahkan ke demo dulu: “Boleh Pak, harganya fleksibel sesuai jumlah siswa. Paling enak saya
+    tunjukkan dulu sistemnya 15 menit, nanti sekalian saya jelaskan paketnya. Kapan luang?”</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>8</span></div>
+</div>
+
+<!-- ============ BAB 05 lanjutan ============ -->
+<div class="page">
+  <div class="chap-label">Bab 05 · Kanal (lanjutan)</div>
+  <h3>Menjawab pertanyaan umum di chat</h3>
+  <div class="script"><span class="who">MEREKA</span>“Ini berbayar ya? Berapa?”</div>
+  <div class="script you"><span class="who">KAMU</span>“Betul Pak, ini berlangganan tahunan &amp; harganya menyesuaikan jumlah siswa. Ada paket mulai dari yang ringan.
+  Biar pas, paling enak saya tunjukkan dulu sistemnya 15 menit nggih, sekalian saya jelaskan paket yang cocok untuk [Nama Sekolah].”</div>
+
+  <div class="script"><span class="who">MEREKA</span>“Sudah ada sekolah yang pakai?”</div>
+  <div class="script you"><span class="who">KAMU</span>“Ini Program Sekolah Perintis Pak — kami membuka kesempatan bagi sekolah terpilih jadi yang pertama
+  di wilayahnya, dengan harga khusus &amp; pendampingan penuh. Aplikasinya sudah jalan &amp; bisa Bapak coba langsung di aethera.my.id.”</div>
+
+  <div class="script"><span class="who">MEREKA</span>“Nanti saya diskusikan dulu.”</div>
+  <div class="script you"><span class="who">KAMU</span>“Siap Pak, monggo. Biar diskusinya lebih jelas, saya kirim proposal singkat &amp; video demonya ya —
+  jadi Bapak bisa tunjukkan ke tim. Boleh saya follow-up lagi hari [sebut hari]?”</div>
+
+  <div class="box">
+    <span class="lbl">PRINSIP</span>
+    <p style="margin:1.5mm 0 0;">Di chat, setiap balasan harus <strong>memajukan satu langkah</strong>: dari kenalan → izin kirim materi →
+    jadwal demo. Selalu akhiri dengan pertanyaan/ajakan, jangan berhenti di pernyataan.</p>
+  </div>
+
+  <h3>Etika &amp; menghindari diblokir</h3>
+  <ul>
+    <li>Jangan kirim ke nomor yang tidak relevan secara massal — berisiko diblokir &amp; merusak nama brand.</li>
+    <li>Variasikan isi pesan (jangan persis sama) kalau menghubungi banyak sekolah.</li>
+    <li>Selalu perkenalkan diri &amp; sumber kontak: “Saya dapat kontak Bapak dari [sumber]” kalau ada.</li>
+    <li>Hormati kalau diminta berhenti. Sopan selalu menang jangka panjang.</li>
+  </ul>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>9</span></div>
+</div>
+
+<!-- ============ BAB 06 — SOSMED ============ -->
+<div class="page">
+  <div class="chap-label">Bab 06 · Kanal</div>
+  <h2>Menawarkan Lewat Media Sosial</h2>
+  <p class="lead">Sosmed bukan untuk “jualan keras”, tapi membangun kepercayaan &amp; menarik calon masuk DM. Sekolah akan cek sosmed kamu sebelum percaya.</p>
+
+  <h3>Platform &amp; perannya</h3>
+  <table>
+    <tr><th>Platform</th><th>Peran</th><th>Konten utama</th></tr>
+    <tr><td>Instagram</td><td>Etalase &amp; kredibilitas</td><td>Mockup fitur, tips, demo singkat (Reels)</td></tr>
+    <tr><td>TikTok</td><td>Jangkauan luas</td><td>Video pendek “masalah → solusi”</td></tr>
+    <tr><td>Facebook Page</td><td>Menjangkau guru/kepsek (usia 30+)</td><td>Artikel, info, masuk grup sekolah</td></tr>
+    <tr><td>LinkedIn (opsional)</td><td>Yayasan / institusi</td><td>Posisi profesional, studi kasus</td></tr>
+  </table>
+
+  <h3>Yang harus ada di profil (wajib)</h3>
+  <ul>
+    <li>Nama jelas: <strong>Aethera — Platform Manajemen Sekolah</strong>.</li>
+    <li>Bio singkat + manfaat + CTA + link: “Demo gratis → aethera.my.id”.</li>
+    <li>Logo sebagai foto profil, kontak WhatsApp aktif, highlight “Fitur” &amp; “Demo”.</li>
+  </ul>
+
+  <h3>7 ide konten yang menjual (tanpa terasa jualan)</h3>
+  <ol>
+    <li><strong>Masalah relatable:</strong> “Masih rekap absen manual tiap hari? Capek nggak sih...” → tunjukkan solusi.</li>
+    <li><strong>Demo fitur 15–30 detik:</strong> absen wajah, notif WA ke ortu, bayar SPP.</li>
+    <li><strong>Before / After:</strong> “TU sebelum vs sesudah pakai Aethera.”</li>
+    <li><strong>Tips bermanfaat:</strong> “5 tanda sekolah butuh digitalisasi.” (beri nilai dulu, baru ajak).</li>
+    <li><strong>Behind the scenes:</strong> proses kamu membangun/onboarding sekolah.</li>
+    <li><strong>Edukasi:</strong> “Apa itu absensi pengenalan wajah &amp; kenapa lebih aman.”</li>
+    <li><strong>Penawaran:</strong> “Program Sekolah Perintis — kuota terbatas.” (sesekali saja).</li>
+  </ol>
+
+  <div class="box tip">
+    <span class="lbl">RUMUS CAPTION</span>
+    <p style="margin:1.5mm 0 0;"><strong>Hook</strong> (kalimat pertama bikin penasaran) → <strong>Isi</strong> (masalah + solusi) →
+    <strong>CTA</strong> (“DM ‘DEMO’ untuk coba gratis”). Pakai 5–10 hashtag relevan: #sekolah #digitalisasipendidikan #absensisiswa #aethera.</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>10</span></div>
+</div>
+
+<!-- ============ BAB 06 lanjutan ============ -->
+<div class="page">
+  <div class="chap-label">Bab 06 · Kanal (lanjutan)</div>
+  <h3>Cara menanggapi DM masuk</h3>
+  <div class="script"><span class="who">MEREKA (DM)</span>“Min, ini buat sekolah berapa harganya?”</div>
+  <div class="script you"><span class="who">KAMU</span>“Halo Kak, terima kasih sudah mampir 🙏 Harganya menyesuaikan jumlah siswa, ada beberapa paket.
+  Boleh saya tahu ini dari sekolah apa &amp; kira-kira berapa jumlah siswanya? Biar saya kasih info yang paling pas. Sekalian kalau mau, saya kirim demo &amp; brosurnya.”</div>
+
+  <div class="box">
+    <span class="lbl">ALUR DM → CLOSING</span>
+    <p style="margin:1.5mm 0 0;">DM masuk → tanya nama sekolah &amp; jumlah siswa → kirim brosur/video → ajak demo →
+    pindah ke WhatsApp (lebih personal) → ikuti alur Bab 05 &amp; 09. Sosmed buat menarik, WA buat menutup.</p>
+  </div>
+
+  <h3>Konsistensi &amp; jadwal posting</h3>
+  <ul>
+    <li>Posting 3–5x seminggu lebih baik daripada 20x lalu hilang sebulan.</li>
+    <li>Siapkan 2 minggu konten sekaligus (batch), jadwalkan. Lihat kalender 30 hari di Bab 12.</li>
+    <li>Balas komentar &amp; DM cepat — algoritma &amp; calon klien suka yang responsif.</li>
+  </ul>
+
+  <h3>Membangun kredibilitas tanpa testimoni palsu</h3>
+  <ul>
+    <li>Tampilkan produk nyata (screenshot/rekaman aplikasi jalan) — ini bukti paling kuat.</li>
+    <li>Bagikan proses &amp; pengetahuan (positioning sebagai ahli, bukan pedagang).</li>
+    <li>Begitu ada sekolah pertama (pilot), minta izin foto/testimoni asli → ini pengubah permainan.</li>
+  </ul>
+  <div class="box warn">
+    <span class="lbl">JANGAN</span>
+    <p style="margin:1.5mm 0 0;">Jangan mengarang testimoni atau angka pengguna palsu. Sekali ketahuan, reputasi hancur.
+    Pakai sudut “Perintis” &amp; bukti produk nyata.</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>11</span></div>
+</div>
+
+<!-- ============ BAB 07 — GRUP ============ -->
+<div class="page">
+  <div class="chap-label">Bab 07 · Kanal</div>
+  <h2>Menawarkan Lewat Grup (Group to Group)</h2>
+  <p class="lead">Grup WhatsApp/Telegram/Facebook berisi kepala sekolah, guru, operator, atau komunitas pendidikan = ladang prospek. Tapi salah cara = dianggap spam &amp; ditendang.</p>
+
+  <h3>Jenis grup yang dituju</h3>
+  <ul>
+    <li>Grup MKKS (Musyawarah Kerja Kepala Sekolah) / KKG / MGMP.</li>
+    <li>Grup operator sekolah / Dapodik per wilayah.</li>
+    <li>Grup yayasan / komunitas sekolah swasta.</li>
+    <li>Grup komunitas pendidikan / EduTech di Facebook.</li>
+  </ul>
+
+  <h3>Aturan main di grup (biar tidak ditendang)</h3>
+  <ol>
+    <li><strong>Izin admin dulu.</strong> Japri admin grup, minta izin berbagi. Sopan &amp; hormati aturan grup.</li>
+    <li><strong>Beri nilai dulu, jangan langsung jualan.</strong> Bagikan tips/info bermanfaat → baru sebut solusi.</li>
+    <li><strong>Jangan spam link.</strong> Satu post berkualitas &gt; sepuluh post jualan.</li>
+    <li><strong>Arahkan ke japri.</strong> “Yang berminat boleh japri saya” — closing terjadi di personal, bukan di grup.</li>
+  </ol>
+
+  <h3>Template post grup (soft, beri nilai)</h3>
+  <div class="script"><span class="who">SALIN INI</span>
+    Izin berbagi Bapak/Ibu 🙏<br/>
+    Banyak sekolah sekarang mulai beralih ke absensi digital biar staf TU nggak rekap manual tiap hari
+    &amp; orang tua dapat kabar real-time.<br/><br/>
+    Kebetulan kami mengembangkan <strong>Aethera</strong> — platform sekolah all-in-one (absensi wajah/QR, SPP online,
+    nilai &amp; rapor, notifikasi WA ortu). Lagi ada Program Sekolah Perintis dengan harga khusus.<br/>
+    Kalau ada yang ingin lihat demonya (gratis), boleh japri saya atau cek aethera.my.id. Terima kasih 🙇</div>
+
+  <div class="box tip">
+    <span class="lbl">STRATEGI JANGKA PANJANG</span>
+    <p style="margin:1.5mm 0 0;">Jadilah anggota grup yang <strong>aktif &amp; membantu</strong> (jawab pertanyaan orang, bagikan info berguna)
+    sebelum menawarkan. Saat kamu sudah dikenal sebagai “orang yang paham digitalisasi sekolah”, orang akan datang sendiri ke kamu.</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>12</span></div>
+</div>
+
+<!-- ============ BAB 08 — VIDEO ============ -->
+<div class="page">
+  <div class="chap-label">Bab 08 · Video</div>
+  <h2>Video Promosi — Flow, Alat &amp; Skrip Lengkap</h2>
+  <p class="lead">Video adalah amunisi paling kuat di era sekarang. Banyak kepala sekolah lebih suka nonton 1 menit
+  daripada baca proposal. Kamu butuh 3 jenis video, dari yang mudah ke yang serius.</p>
+
+  <h3>3 jenis video yang perlu dibuat</h3>
+  <table>
+    <tr><th>Jenis</th><th>Durasi</th><th>Tujuan</th><th>Tingkat kesulitan</th></tr>
+    <tr><td>Teaser / Reels</td><td>15–30 dtk</td><td>Tarik perhatian di sosmed</td><td>Mudah</td></tr>
+    <tr><td>Demo Produk</td><td>2–3 mnt</td><td>Jelaskan fitur, dikirim ke calon</td><td>Sedang</td></tr>
+    <tr><td>Company Profile</td><td>1–2 mnt</td><td>Bangun kredibilitas &amp; citra</td><td>Serius</td></tr>
+  </table>
+
+  <h3>Alat yang dibutuhkan (yang sudah ada vs perlu disiapkan)</h3>
+  <table>
+    <tr><th>Kebutuhan</th><th>Status</th><th>Catatan</th></tr>
+    <tr><td>HP dengan kamera bagus</td><td class="green">Ada</td><td>Cukup untuk semua video. Tak perlu kamera mahal.</td></tr>
+    <tr><td>Aplikasi live (aethera.my.id)</td><td class="green">Ada</td><td>Sumber rekaman layar &amp; demo absen wajah.</td></tr>
+    <tr><td>Mockup &amp; gambar fitur</td><td class="green">Ada</td><td>Sudah di folder ppt_assets (el_*.png).</td></tr>
+    <tr><td>Aplikasi edit video</td><td class="amber">Siapkan</td><td>CapCut (gratis, HP/PC) — paling mudah &amp; cukup.</td></tr>
+    <tr><td>Screen recorder</td><td class="amber">Siapkan</td><td>Bawaan HP / OBS Studio (PC, gratis) untuk rekam layar.</td></tr>
+    <tr><td>Musik latar bebas royalti</td><td class="amber">Siapkan</td><td>Dari library CapCut / YouTube Audio Library.</td></tr>
+    <tr><td>Mic (opsional)</td><td class="amber">Opsional</td><td>Mic clip-on murah bikin suara jauh lebih jernih.</td></tr>
+  </table>
+
+  <div class="box tip">
+    <span class="lbl">REKOMENDASI ALUR PRODUKSI TERMUDAH</span>
+    <p style="margin:1.5mm 0 0;">1) Rekam layar demo aplikasi (screen recorder) + rekam absen wajah pakai HP. 2) Tulis naskah (skrip di bawah).
+    3) Rekam suara (voice over) baca naskah di tempat sunyi. 4) Gabung di CapCut: klip + voice over + teks + musik pelan + logo.
+    5) Ekspor 1080p. Selesai — tanpa perlu tampil di depan kamera kalau belum pede.</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>13</span></div>
+</div>
+
+<!-- ============ BAB 08 — FLOW + SKRIP TEASER & DEMO ============ -->
+<div class="page">
+  <div class="chap-label">Bab 08 · Video (lanjutan)</div>
+  <h3>Flow Video Teaser (15–30 detik) — untuk Reels/TikTok/Status</h3>
+  <table>
+    <tr><th>Detik</th><th>Visual</th><th>Teks/Suara</th></tr>
+    <tr><td>0–3</td><td>Tumpukan buku absen / TU sibuk (atau teks besar di layar gelap)</td><td>HOOK: “Masih rekap absensi manual tiap hari?”</td></tr>
+    <tr><td>3–10</td><td>Rekaman absen wajah → langsung tercatat</td><td>“Di sekolah modern, cukup tatap kamera. Hadir, otomatis tercatat.”</td></tr>
+    <tr><td>10–20</td><td>Notif WA ke ortu + dashboard angka</td><td>“Orang tua langsung dapat kabar. Kepala sekolah pantau dari HP.”</td></tr>
+    <tr><td>20–28</td><td>Logo Aethera + teks</td><td>CTA: “Aethera. Coba gratis di aethera.my.id”</td></tr>
+  </table>
+
+  <h3>Skrip Voice Over — Video Demo (2–3 menit)</h3>
+  <div class="script"><span class="who">PEMBUKA (0:00–0:15)</span>
+    “Mengelola sekolah itu rumit — absensi, pembayaran, nilai, komunikasi dengan orang tua, semua terpisah.
+    Bagaimana kalau semuanya jadi satu? Perkenalkan, Aethera.”</div>
+  <div class="script"><span class="who">ABSENSI (0:15–0:45)</span>
+    “Siswa cukup menatap kamera. Dalam satu detik, kehadiran tercatat lengkap dengan waktu dan lokasi.
+    Tidak ada lagi kartu hilang atau rekap manual. Bisa juga pakai QR untuk yang perangkatnya terbatas.”</div>
+  <div class="script"><span class="who">NOTIFIKASI (0:45–1:05)</span>
+    “Begitu anak tiba, orang tua otomatis menerima notifikasi WhatsApp. Mereka tenang, sekolah terlihat profesional.”</div>
+  <div class="script"><span class="who">SPP &amp; AKADEMIK (1:05–1:40)</span>
+    “Pembayaran SPP? Cukup dari HP — transfer, QRIS, atau e-wallet, dan status langsung lunas otomatis.
+    Nilai, rapor, jadwal, semua digital. Bahkan ada ujian online anti-curang.”</div>
+  <div class="script"><span class="who">DASHBOARD (1:40–2:05)</span>
+    “Kepala sekolah punya dashboard lengkap — bahkan ringkasan mingguan yang dibuat otomatis oleh AI.
+    Keputusan berbasis data, bukan perkiraan.”</div>
+  <div class="script"><span class="who">PENUTUP / CTA (2:05–2:20)</span>
+    “Absensi AI, SPP online, pembelajaran, komunikasi — semua dalam satu platform. Aethera.
+    Coba gratis sekarang di aethera.my.id, atau hubungi kami untuk demo langsung.”</div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>14</span></div>
+</div>
+
+<!-- ============ BAB 08 — TIPS REKAM + COMPANY PROFILE ============ -->
+<div class="page">
+  <div class="chap-label">Bab 08 · Video (lanjutan)</div>
+  <h3>Skrip Company Profile (1–2 menit) — kalau berani tampil di kamera</h3>
+  <div class="script you"><span class="who">KAMU MENGHADAP KAMERA</span>
+    “Halo, saya Andy, founder Aethera. Saya melihat banyak sekolah masih kewalahan dengan pekerjaan administrasi
+    yang manual — padahal waktu guru lebih berharga untuk mengajar. Karena itu kami membangun Aethera:
+    satu platform yang menyatukan absensi, pembayaran, pembelajaran, dan komunikasi orang tua.
+    Kami membuka Program Sekolah Perintis untuk sekolah yang ingin jadi pelopor digitalisasi di wilayahnya.
+    Mari ngobrol — saya tunjukkan langsung bagaimana Aethera bisa membantu sekolah Anda.”</div>
+
+  <h3>Tips merekam yang bagus (pakai HP)</h3>
+  <ul>
+    <li><strong>Cahaya:</strong> hadap ke jendela / sumber cahaya. Jangan membelakangi cahaya (jadi gelap).</li>
+    <li><strong>Stabil:</strong> sandarkan HP / pakai tripod murah. Video goyang terlihat amatir.</li>
+    <li><strong>Suara:</strong> rekam di ruang sunyi, dekat ke mic. Suara jernih &gt; gambar bagus.</li>
+    <li><strong>Horizontal</strong> untuk demo/YouTube, <strong>vertikal</strong> untuk Reels/TikTok/Status.</li>
+    <li><strong>Rekam beberapa take</strong>, pilih yang terbaik. Jangan paksakan sekali jadi.</li>
+  </ul>
+
+  <h3>Tips edit di CapCut (langkah ringkas)</h3>
+  <ol>
+    <li>Impor semua klip + rekaman layar + voice over.</li>
+    <li>Susun sesuai flow tabel di atas. Potong bagian yang lambat — jaga tetap padat.</li>
+    <li>Tambah <strong>teks/caption</strong> di tiap poin penting (banyak yang nonton tanpa suara!).</li>
+    <li>Tambah musik latar pelan (volume kecil, jangan menutupi suara).</li>
+    <li>Tambah logo Aethera di pojok + frame CTA di akhir (aethera.my.id + WA).</li>
+    <li>Ekspor 1080p. Untuk sosmed bikin 2 versi: horizontal &amp; vertikal.</li>
+  </ol>
+
+  <div class="box">
+    <span class="lbl">PRINSIP VIDEO YANG MENJUAL</span>
+    <p style="margin:1.5mm 0 0;">3 detik pertama menentukan ditonton/diskip — buka dengan masalah/hook, bukan logo.
+    Tunjukkan produk nyata (bukan cuma teks). Selalu akhiri dengan satu CTA jelas. Pendek &amp; padat menang.</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>15</span></div>
+</div>
+
+<!-- ============ BAB 09 — CARA NGOMONG ============ -->
+<div class="page">
+  <div class="chap-label">Bab 09 · Komunikasi</div>
+  <h2>Cara Ngomong — Skrip Kata-per-Kata</h2>
+  <p class="lead">Apa pun kanalnya, ini kerangka percakapan yang terbukti. Hafalkan alurnya, bukan kata-katanya — biar terdengar natural, bukan robot.</p>
+
+  <h3>Kerangka 5 langkah (A-I-D-A+)</h3>
+  <p><span class="num">1</span><strong>Perhatian</strong> — buka dengan pertanyaan/masalah relatable.</p>
+  <p><span class="num">2</span><strong>Minat</strong> — hubungkan ke kondisi mereka, gali masalah.</p>
+  <p><span class="num">3</span><strong>Hasrat</strong> — tunjukkan solusi + manfaat (demo).</p>
+  <p><span class="num">4</span><strong>Aksi</strong> — ajak langkah konkret (demo/proposal).</p>
+  <p><span class="num">5</span><strong>Tindak lanjut</strong> — sepakati “apa selanjutnya” + tanggal.</p>
+
+  <h3>Pembuka yang kuat (jangan buka dengan “numpang nawarin”)</h3>
+  <div class="script you"><span class="who">BAGUS</span>“Pak, boleh saya tanya — selama ini hal paling merepotkan dalam urusan administrasi sekolah apa ya?”</div>
+  <div class="script"><span class="who">BURUK (hindari)</span>“Pak, saya mau nawarin aplikasi nih, mau nggak?” (langsung ditolak)</div>
+
+  <h3>Kalimat transisi masalah → solusi</h3>
+  <div class="script you"><span class="who">KAMU</span>“Nah, yang Bapak sebut tadi — [ulang masalahnya] — itu justru persis yang Aethera selesaikan. Boleh saya tunjukkan sebentar?”</div>
+
+  <h3>Membangkitkan keinginan (pakai cerita, bukan daftar fitur)</h3>
+  <div class="script you"><span class="who">KAMU</span>“Bayangkan Pak: jam 7 pagi, semua siswa sudah absen otomatis cuma dengan menatap kamera.
+  Di saat yang sama, orang tua mereka dapat notifikasi di HP bahwa anaknya sudah sampai. Dan Bapak,
+  dari ruangan ini, sudah lihat angka kehadiran hari ini di dashboard. Tanpa satu pun staf rekap manual.”</div>
+
+  <h3>Hal yang membuat kamu dipercaya saat bicara</h3>
+  <ul>
+    <li><strong>Jujur soal status:</strong> “Kami program perintis, aplikasi sudah jalan &amp; bisa dicoba sekarang.”</li>
+    <li><strong>Akui keterbatasan:</strong> kalau ditanya fitur yang belum ada — “Itu sedang kami kembangkan” lebih dipercaya daripada mengarang.</li>
+    <li><strong>Beri garansi:</strong> “Ada garansi 30 hari &amp; bisa coba dulu, jadi risikonya kecil buat Bapak.”</li>
+    <li><strong>Tenang &amp; tidak memaksa</strong> — orang yang tidak desperate justru lebih dipercaya.</li>
+  </ul>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>16</span></div>
+</div>
+
+<!-- ============ BAB 09 lanjutan — OBJECTION ============ -->
+<div class="page">
+  <div class="chap-label">Bab 09 · Komunikasi (lanjutan)</div>
+  <h3>Menjawab 7 keberatan tersering (teknik: Akui → Jembatani → Solusi)</h3>
+
+  <div class="script"><span class="who">“Mahal / belum ada anggaran.”</span></div>
+  <div class="script you"><span class="who">KAMU</span>“Saya paham Pak, anggaran memang harus dijaga. Tapi coba dihitung: mesin absensi + aplikasi SPP +
+  aplikasi nilai + jam kerja TU, totalnya jauh lebih besar &amp; tetap terpisah. Aethera satu langganan, satu sistem.
+  Ada paket ringan &amp; harga perintis juga — bisa kita sesuaikan kemampuan sekolah.”</div>
+
+  <div class="script"><span class="who">“Guru kami gaptek, susah pakainya.”</span></div>
+  <div class="script you"><span class="who">KAMU</span>“Justru itu yang kami pikirkan Pak. Tampilannya berbahasa Indonesia &amp; sederhana — absen cuma menatap kamera.
+  Dan kami kasih pelatihan untuk semua guru sampai lancar. Sudah termasuk, tidak ada biaya tambahan.”</div>
+
+  <div class="script"><span class="who">“Kalau internet mati gimana?”</span></div>
+  <div class="script you"><span class="who">KAMU</span>“Data akan tersimpan &amp; otomatis tersinkron begitu internet kembali. Kami juga bantu siapkan
+  konfigurasi jaringan yang andal pas pemasangan. Datanya juga dicadangkan tiap hari.”</div>
+
+  <div class="script"><span class="who">“Data sekolah aman nggak?”</span></div>
+  <div class="script you"><span class="who">KAMU</span>“Sangat aman Pak. Data dienkripsi, akses berjenjang per peran, dicadangkan otomatis, dan setiap aksi
+  tercatat di log. Data sepenuhnya milik sekolah — bisa diekspor kapan saja.”</div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>17</span></div>
+</div>
+
+<div class="page">
+  <div class="chap-label">Bab 09 · Komunikasi (lanjutan)</div>
+  <h3>Keberatan tersering (lanjutan)</h3>
+
+  <div class="script"><span class="who">“Sudah ada sekolah yang pakai?”</span></div>
+  <div class="script you"><span class="who">KAMU</span>“Ini Program Sekolah Perintis Pak — kesempatan jadi yang pertama di wilayah ini, dengan harga &amp;
+  pendampingan khusus. Aplikasinya sudah jalan penuh &amp; bisa Bapak coba langsung sekarang.”</div>
+
+  <div class="script"><span class="who">“Saya pikir-pikir dulu / diskusi tim.”</span></div>
+  <div class="script you"><span class="who">KAMU</span>“Silakan Pak, wajar. Biar diskusinya lebih mudah, saya kirim proposal &amp; video demonya supaya bisa
+  ditunjukkan ke tim. Boleh saya follow-up hari [sebut hari]? Sekalian kalau ada pertanyaan dari tim, saya bantu jawab.”</div>
+
+  <div class="script"><span class="who">“Kami sudah pakai sistem lain.”</span></div>
+  <div class="script you"><span class="who">KAMU</span>“Bagus Pak, berarti sudah melek digital. Boleh saya tahu, sistem sekarang sudah mencakup semua —
+  absensi, SPP, nilai, &amp; komunikasi ortu dalam satu tempat? Banyak sekolah pakai beberapa aplikasi terpisah,
+  nah Aethera menyatukan itu. Boleh saya tunjukkan bedanya?”</div>
+
+  <div class="box tip">
+    <span class="lbl">TEKNIK UNIVERSAL</span>
+    <p style="margin:1.5mm 0 0;">Apa pun keberatannya, pakai pola <strong>Akui → Jembatani → Solusi</strong>:
+    “Saya paham...” (akui perasaannya), “justru karena itu...” (jembatani), “di Aethera...” (solusi).
+    Jangan pernah membantah keras — setuju dulu, baru arahkan.</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>17b</span></div>
+</div>
+
+<!-- ============ BAB 10 — NEGO ============ -->
+<div class="page">
+  <div class="chap-label">Bab 10 · Closing</div>
+  <h2>Cara Nego &amp; Tawar-Menawar Harga</h2>
+  <p class="lead">Negosiasi bukan perang — cari titik temu di mana keduanya menang. Kuncinya: jangan buru-buru turunkan harga, beri nilai dulu.</p>
+
+  <h3>Prinsip nego</h3>
+  <ul>
+    <li><strong>Jangan sebut harga terlalu cepat.</strong> Bangun nilai dulu (demo), baru harga terasa pantas.</li>
+    <li><strong>Jangkar tinggi:</strong> sebut harga normal dulu, baru harga perintis — terasa hemat.</li>
+    <li><strong>Kalau diminta turun, minta sesuatu sebagai gantinya</strong> (komitmen lebih cepat, kontrak lebih panjang, testimoni, referral).</li>
+    <li><strong>Beri pilihan, bukan ya/tidak:</strong> “Mau paket Dasar atau Sekolah?” lebih baik dari “Jadi nggak?”</li>
+  </ul>
+
+  <h3>Cara menyebut harga (teknik sandwich)</h3>
+  <div class="script you"><span class="who">KAMU</span>“Untuk sekolah dengan [X] siswa, paket yang pas adalah [paket]. Harga normalnya [harga normal] per tahun —
+  sudah termasuk pemasangan, pelatihan, dan dukungan penuh. Tapi karena Bapak masuk Program Perintis,
+  harganya jadi [harga perintis], dan gratis biaya setup. Jadi yang Bapak dapat: satu sistem lengkap, tanpa biaya tersembunyi.”</div>
+
+  <h3>Kalau mereka menawar lebih rendah</h3>
+  <table>
+    <tr><th>Mereka bilang</th><th>Respon kamu</th></tr>
+    <tr><td>“Bisa kurang nggak?”</td><td>“Harga ini sudah harga perintis Pak. Tapi kalau Bapak bisa putuskan minggu ini, saya usahakan bonus [training tambahan / kiosk]. Gimana?”</td></tr>
+    <tr><td>“Sekolah X kasih lebih murah.”</td><td>“Bisa jadi Pak, tapi mari bandingkan isinya — apakah sudah termasuk semua modul, pelatihan, &amp; dukungan seperti kami? Sering yang murah itu sebagian saja.”</td></tr>
+    <tr><td>“Anggaran cuma sekian.”</td><td>“Kalau gitu, kita mulai paket Dasar dulu Pak sesuai anggaran, nanti bisa upgrade saat sudah terasa manfaatnya. Yang penting jalan dulu.”</td></tr>
+    <tr><td>“Bayarnya berat di awal.”</td><td>“Bisa kita atur termin pembayaran Pak — misalnya dua tahap. Jadi tidak memberatkan di awal.”</td></tr>
+  </table>
+
+  <div class="box tip">
+    <span class="lbl">SENJATA NEGO (PAKAI BIJAK)</span>
+    <p style="margin:1.5mm 0 0;">Diskon early-bird, gratis setup, training tambahan, masa coba/garansi 30 hari, termin pembayaran,
+    bonus add-on. Berikan SATU sebagai “pemanis penutup” — jangan obral semua sekaligus.</p>
+  </div>
+  <div class="box warn">
+    <span class="lbl">JANGAN</span>
+    <p style="margin:1.5mm 0 0;">Jangan menjelekkan kompetitor. Jangan turunkan harga drastis tanpa alasan (bikin nilai produk terlihat murah).
+    Jangan janji fitur yang belum ada demi closing — itu bumerang saat onboarding.</p>
+  </div>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>18</span></div>
+</div>
+
+<!-- ============ BAB 11 — CLOSING ============ -->
+<div class="page">
+  <div class="chap-label">Bab 11 · Closing</div>
+  <h2>Closing &amp; Follow-Up</h2>
+  <p class="lead">Banyak deal gagal bukan karena produknya jelek, tapi karena tidak ada yang menutup &amp; menindaklanjuti. Ini bagian yang membedakan penjual biasa &amp; jago.</p>
+
+  <h3>Sinyal mereka siap closing</h3>
+  <ul>
+    <li>Bertanya detail harga, termin, atau “kapan bisa mulai?”.</li>
+    <li>Bertanya teknis: “Migrasi datanya gimana?”, “Gurunya dilatih?”.</li>
+    <li>Mengajak orang lain (bendahara/yayasan) ikut dengar.</li>
+    <li>Mulai membayangkan pakai: “Kalau di sekolah saya, nanti...”.</li>
+  </ul>
+
+  <h3>Teknik menutup (pilih sesuai situasi)</h3>
+  <table>
+    <tr><th>Teknik</th><th>Kalimat</th></tr>
+    <tr><td>Asumsi</td><td>“Baik Pak, saya siapkan paket Sekolah ya. Datanya bisa kita mulai migrasi minggu depan.”</td></tr>
+    <tr><td>Pilihan</td><td>“Mau mulai dengan paket Dasar dulu atau langsung Sekolah, Pak?”</td></tr>
+    <tr><td>Urgensi (jujur)</td><td>“Kuota Program Perintis terbatas — kalau Bapak putuskan bulan ini, harga &amp; bonusnya terkunci.”</td></tr>
+    <tr><td>Langkah kecil</td><td>“Kita mulai dari demo untuk tim Bapak dulu yuk, tanpa komitmen. Kapan enaknya?”</td></tr>
+  </table>
+
+  <h3>Ritme follow-up (jangan menyerah terlalu cepat)</h3>
+  <table>
+    <tr><th>Waktu</th><th>Aksi</th></tr>
+    <tr><td>Hari H (H+0)</td><td>Kirim ucapan terima kasih + proposal + video. Di hari yang sama.</td></tr>
+    <tr><td>H+3</td><td>Follow-up pertama: “Ada yang bisa saya bantu jelaskan dari proposalnya?”</td></tr>
+    <tr><td>H+7</td><td>Telepon / WA: tanya hasil diskusi internal.</td></tr>
+    <tr><td>H+14</td><td>Penawaran terakhir / insentif: “Batas Program Perintis tinggal...”</td></tr>
+    <tr><td>H+30+</td><td>Kalau belum, simpan di daftar &amp; approach ulang 1–2 bulan lagi.</td></tr>
+  </table>
+
+  <div class="box tip">
+    <span class="lbl">FAKTA</span>
+    <p style="margin:1.5mm 0 0;">Mayoritas penjualan terjadi setelah follow-up ke-2 sampai ke-5 — bukan di kontak pertama.
+    Yang membedakan kamu dari penjual lain: kamu menindaklanjuti dengan sopan &amp; konsisten, bukan menghilang.</p>
+  </div>
+
+  <h3>Setelah deal: jaga hubungan</h3>
+  <ul>
+    <li>Onboarding mulus = sekolah puas = testimoni + referral (penjualan termurah!).</li>
+    <li>Sekolah pertama yang puas adalah aset terbesarmu — minta izin jadikan studi kasus.</li>
+    <li>Sekolah saling kenal — satu kepsek puas bisa merekomendasikan ke MKKS.</li>
+  </ul>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>19</span></div>
+</div>
+
+<!-- ============ BAB 12 — CHECKLIST + KALENDER ============ -->
+<div class="page">
+  <div class="chap-label">Bab 12 · Eksekusi</div>
+  <h2>Checklist &amp; Kalender Konten 30 Hari</h2>
+
+  <h3>Checklist persiapan (lakukan sekali di awal)</h3>
+  <ul>
+    <li>☐ Siapkan badan usaha + rekening + NPWP (untuk transaksi resmi).</li>
+    <li>☐ Buat akun sosmed brand (IG, TikTok, FB Page) + isi profil &amp; logo.</li>
+    <li>☐ Buat 1 video teaser + 1 video demo (Bab 08).</li>
+    <li>☐ Siapkan daftar 20–30 sekolah target + kontak.</li>
+    <li>☐ Simpan semua amunisi di HP (brosur PDF, video, link demo) biar gampang kirim.</li>
+    <li>☐ Hafal alur percakapan (Bab 09) &amp; jawaban keberatan.</li>
+  </ul>
+
+  <h3>Checklist tiap mau approach sekolah</h3>
+  <ul>
+    <li>☐ Cari nama kepsek + jumlah siswa + jenis sekolah.</li>
+    <li>☐ Tentukan paket yang cocok untuk rekomendasi.</li>
+    <li>☐ Pastikan demo &amp; internet siap.</li>
+    <li>☐ Tentukan tujuan kontak ini (jadwal demo? kirim proposal?).</li>
+  </ul>
+
+  <h3>Kalender konten sosmed 30 hari (posting 3–4x/minggu)</h3>
+  <table>
+    <tr><th>Minggu</th><th>Senin</th><th>Rabu</th><th>Jumat</th></tr>
+    <tr><td>1</td><td>Masalah relatable (rekap manual)</td><td>Demo absen wajah (Reels)</td><td>Tips: 5 tanda sekolah perlu digitalisasi</td></tr>
+    <tr><td>2</td><td>Demo notif WA ortu</td><td>Before/After TU</td><td>Edukasi: apa itu absensi wajah</td></tr>
+    <tr><td>3</td><td>Demo bayar SPP online</td><td>Behind the scenes / proses</td><td>Penawaran: Program Perintis</td></tr>
+    <tr><td>4</td><td>Fitur gamifikasi/leaderboard</td><td>Demo dashboard kepsek + AI</td><td>Ajakan demo gratis + CTA kuat</td></tr>
+  </table>
+
+  <div class="box">
+    <span class="lbl">TARGET MINGGUAN (ISI SENDIRI)</span>
+    <p style="margin:1.5mm 0 0;">Kontak baru: ____ /minggu · Demo: ____ /minggu · Proposal terkirim: ____ /minggu · Closing: ____ /bulan.
+    Catat di buku/spreadsheet. Yang diukur, yang bertumbuh.</p>
+  </div>
+
+  <h3>3 hukum penjualan yang harus diingat</h3>
+  <ol>
+    <li><strong>Konsisten menang.</strong> Lebih baik 5 approach/minggu rutin daripada 50 sekali lalu berhenti.</li>
+    <li><strong>Tolakan itu normal.</strong> Setiap “tidak” mendekatkan ke “ya”. Jangan dimasukkan ke hati.</li>
+    <li><strong>Bantu, jangan jualan.</strong> Niatkan membantu sekolah jadi lebih baik — penjualan mengikuti.</li>
+  </ol>
+  <div class="foot"><span>AETHERA · SALES PLAYBOOK</span><span>20</span></div>
+</div>
+
+<!-- ============ PENUTUP ============ -->
+<div class="page cover">
+  <div class="grid"></div>
+  <div class="br" style="left:14mm;top:14mm;border-left:2px solid var(--cyan);border-top:2px solid var(--cyan);"></div>
+  <div class="br" style="right:14mm;bottom:14mm;border-right:2px solid var(--cyan);border-bottom:2px solid var(--cyan);"></div>
+  <div style="position:relative;">
+    <div class="eyebrow">PENUTUP</div>
+    <h1 class="title" style="font-size:26pt;">Jualan itu soal<br/>membantu, bukan memaksa.</h1>
+    <p style="font-family:'Inter';font-weight:300;font-size:12pt;color:#9fc3cf;max-width:140mm;">
+      Kamu punya produk nyata yang benar-benar menyelesaikan masalah sekolah.
+      Tugasmu cuma menyampaikannya dengan jujur, percaya diri, &amp; konsisten.
+      Mulai dari satu sekolah — sisanya akan mengikuti.
+    </p>
+    <div style="margin-top:12mm;font-family:'JetBrains Mono';font-size:10pt;color:#bfdce6;line-height:2;">
+      Andy Siswanto A.B · Founder Aethera<br/>
+      aethera.my.id · 0812-9315-9011 · Aethera.pro@gmail.com
+    </div>
+  </div>
+</div>
+</body>
+</html>

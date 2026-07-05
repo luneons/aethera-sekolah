@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "id.my.aethera.twa",
+        "sha256_cert_fingerprints": ["36:04:E1:E9:1B:32:48:BD:AA:F8:40:A2:F6:D8:29:AC:E0:69:7F:AF:0A:2A:8A:CE:BD:79:0F:F9:E8:F0:A6:D7"]
+      }
+    }]

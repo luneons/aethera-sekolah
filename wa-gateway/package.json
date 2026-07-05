@@ -1,0 +1,16 @@
+{
+  "name": "aethera-wa-gateway",
+  "version": "1.0.0",
+  "description": "WhatsApp Gateway lokal menggunakan Baileys dengan message queue",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.16",
+    "cors": "^2.8.6",
+    "express": "^4.21.0",
+    "pino": "^9.4.0"
+  }
+}

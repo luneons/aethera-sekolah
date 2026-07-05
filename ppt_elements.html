@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#081019; --card:#0e1d2b; --card2:#12273a; --border:#1d3a52;
+    --cyan:#00d4d4; --cyan2:#00b8b8; --teal:#19e3e3;
+    --orange:#f97316; --orange-l:#fb923c; --amber:#fbbf24;
+    --pink:#ec4899; --violet:#a855f7;
+    --green:#22c55e; --rose:#fb5d5d;
+    --txt:#e8f4f8; --muted:#8baebe; --muted2:#5b7a8c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
+  body{background:#1b2733;padding:40px;}
+  .shot{display:inline-block;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .disp{font-family:'Space Grotesk',sans-serif;}
+
+  /* ===== generic card ===== */
+  .card{
+    background:linear-gradient(160deg,var(--card) 0%, #0a1722 100%);
+    border:1px solid var(--border);border-radius:20px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+
+  /* ===== PAYMENT STEPS ===== */
+  .pay-card{width:420px;padding:26px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;}
+  .pill.unpaid{background:rgba(251,191,36,.14);color:var(--amber);border:1px solid rgba(251,191,36,.4);}
+  .pill.paid{background:rgba(34,197,94,.16);color:#4ade80;border:1px solid rgba(34,197,94,.45);}
+  .row{display:flex;align-items:center;justify-content:space-between;}
+  .label{color:var(--muted);font-size:13px;}
+  .big-amount{font-family:'Space Grotesk';font-weight:700;font-size:38px;color:var(--txt);letter-spacing:-.02em;}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:14px;font-weight:700;font-size:15px;border:none;cursor:default;}
+  .btn-pay{background:linear-gradient(135deg,var(--orange),var(--orange-l));color:#fff;box-shadow:0 8px 24px rgba(249,115,22,.4);}
+  .method{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:14px;margin-bottom:10px;background:rgba(255,255,255,.02);}
+  .method.sel{border-color:var(--cyan);background:rgba(0,212,212,.08);box-shadow:0 0 0 3px rgba(0,212,212,.12);}
+  .m-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;font-family:'Space Grotesk';color:#fff;}
+  .check{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+  /* ===== LEADERBOARD ===== */
+  .lb{width:460px;padding:28px;}
+  .podium{display:flex;align-items:flex-end;justify-content:center;gap:14px;margin:8px 0 22px;}
+  .pod{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .ava{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;color:#08121c;border:3px solid;}
+  .bar{border-radius:12px 12px 0 0;width:84px;display:flex;align-items:flex-start;justify-content:center;padding-top:8px;font-family:'Space Grotesk';font-weight:800;font-size:22px;color:rgba(255,255,255,.9);}
+  .lb-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;margin-bottom:7px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);}
+  .rank{width:26px;text-align:center;font-family:'Space Grotesk';font-weight:700;color:var(--muted);}
+
+  /* ===== XP / LEVEL ===== */
+  .xp{width:420px;padding:26px;}
+  .xp-track{height:16px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;}
+  .xp-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cyan),var(--violet));box-shadow:0 0 16px rgba(0,212,212,.6);}
+  .lvl-badge{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,var(--violet),var(--cyan));box-shadow:0 8px 24px rgba(168,85,247,.4);}
+
+  /* ===== BADGES ===== */
+  .badges{width:480px;padding:26px;}
+  .badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;}
+  .bdg{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);}
+  .bdg .ic{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+
+  /* ===== SCAN FACE ===== */
+  .scan{width:380px;padding:30px;text-align:center;}
+  .scan-ring{width:130px;height:130px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;border:4px solid var(--green);box-shadow:0 0 40px rgba(34,197,94,.4);background:radial-gradient(circle,rgba(34,197,94,.14),transparent);}
+
+  /* ===== WA NOTIF (phone) ===== */
+  .phone{width:330px;border-radius:34px;background:#0b141a;border:8px solid #1a2730;padding:14px 12px 22px;box-shadow:0 24px 70px rgba(0,0,0,.5);}
+  .wa-top{display:flex;align-items:center;gap:10px;padding:8px 6px 14px;border-bottom:1px solid rgba(255,255,255,.06);}
+  .wa-bubble{background:#075e54;color:#e9ffe9;border-radius:14px 14px 14px 4px;padding:12px 14px;margin:14px 4px 0;font-size:13.5px;line-height:1.5;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.3);}
+  .wa-time{display:block;text-align:right;font-size:10px;color:rgba(255,255,255,.6);margin-top:6px;}
+
+  /* ===== KPI ===== */
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;width:760px;}
+  .kpi .c{padding:20px;border-radius:18px;border:1px solid var(--border);background:linear-gradient(160deg,var(--card),#0a1722);}
+  .kpi .v{font-family:'Space Grotesk';font-weight:800;font-size:34px;letter-spacing:-.02em;}
+  .kpi .l{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+
+  /* ===== QR CARD ===== */
+  .qrc{width:300px;padding:26px;text-align:center;}
+  .qbox{width:170px;height:170px;margin:14px auto;background:#fff;border-radius:14px;padding:14px;}
+  .qbox svg{width:100%;height:100%;}
+</style>
+</head>
+<body>
+
+<!-- ============ PAYMENT STEP 1: Tagihan ============ -->
+<div class="shot" data-shot="pay_1" style="padding:30px;">
+  <div class="card pay-card">
+    <div class="row" style="margin-bottom:18px;">
+      <div>
+        <div class="disp" style="font-weight:700;font-size:19px;color:var(--txt);">SPP Bulanan</div>
+        <div class="mono" style="font-size:12px;color:var(--muted);margin-top:3px;">Periode 2026-06</div>
+      </div>
+      <span class="pill unpaid">● BELUM LUNAS</span>
+    </div>
+    <div class="label">Total tagihan</div>
+    <div class="big-amount" style="margin:2px 0 4px;">Rp 150.000</div>
+    <div class="mono" style="font-size:12px;color:var(--rose);margin-bottom:20px;">⏱ Jatuh tempo: 12 Juni 2026</div>
+    <div class="btn btn-pay">💳 Bayar Online</div>
+  </div>
+</div>
+
+<!-- ============ PAYMENT STEP 2: Pilih Metode ============ -->
+<div class="shot" data-shot="pay_2" style="padding:30px;">
+  <div class="card pay-card">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:4px;">Pilih Metode Pembayaran</div>
+    <div class="label" style="margin-bottom:18px;">Rp 150.000 — SPP Bulanan</div>
+    <div class="method sel">
+      <div class="m-icon" style="background:#1a52c4;">BCA</div>
+      <div style="flex:1;"><div style="color:var(--txt);font-weight:600;font-size:14px;">Virtual Account BCA</div><div class="label" style="font-size:11px;">Transfer otomatis terverifikasi</div></div>
+      <div class="check" style="background:var(--cyan);color:#06202a;">✓</div>
+    </div>
+    <div class="method">
+      <div class="m-icon" style="background:linear-gradient(135deg,#e2245a,#7a1fa0);">QRIS</div>
+      <div style="flex:1;"><div style="color:var(--txt);font-weight:600;font-size:14px;">QRIS</div><div class="label" style="font-size:11px;">Scan dari semua e-wallet & m-banking</div></div>
+    </div>
+    <div class="method">
+      <div class="m-icon" style="background:#00aa13;">Go</div>
+      <div style="flex:1;"><div style="color:var(--txt);font-weight:600;font-size:14px;">GoPay / ShopeePay</div><div class="label" style="font-size:11px;">Bayar pakai saldo e-wallet</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAYMENT STEP 3: Lunas ============ -->
+<div class="shot" data-shot="pay_3" style="padding:30px;">
+  <div class="card pay-card" style="text-align:center;border-color:rgba(34,197,94,.45);">
+    <div style="width:90px;height:90px;border-radius:50%;margin:6px auto 18px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(34,197,94,.2),transparent);border:4px solid var(--green);box-shadow:0 0 36px rgba(34,197,94,.45);">
+      <span style="font-size:46px;">✓</span>
+    </div>
+    <div class="disp" style="font-weight:700;font-size:24px;color:#4ade80;">Pembayaran Berhasil</div>
+    <div class="label" style="margin:8px 0 16px;">SPP Bulanan 2026-06 telah lunas</div>
+    <div class="big-amount" style="font-size:30px;color:#4ade80;">Rp 150.000</div>
+    <span class="pill paid" style="margin-top:16px;">✓ LUNAS OTOMATIS</span>
+    <div class="mono" style="font-size:11px;color:var(--muted2);margin-top:14px;">Notifikasi WhatsApp terkirim ke orang tua</div>
+  </div>
+</div>
+
+<!-- ============ LEADERBOARD ============ -->
+<div class="shot" data-shot="leaderboard" style="padding:30px;">
+  <div class="card lb">
+    <div class="row" style="margin-bottom:6px;">
+      <div class="disp" style="font-weight:700;font-size:19px;color:var(--txt);">🏆 Papan Peringkat Kelas</div>
+    </div>
+    <div class="podium">
+      <div class="pod">
+        <div class="ava" style="width:50px;height:50px;background:linear-gradient(135deg,#cfd8e3,#9aa7b5);border-color:#c0c8d2;font-size:16px;">DW</div>
+        <div class="bar" style="height:74px;background:linear-gradient(180deg,#c8d2dd,#8c97a3);">2</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;">Dewi · 1.840</div>
+      </div>
+      <div class="pod">
+        <div style="font-size:20px;margin-bottom:-2px;">👑</div>
+        <div class="ava" style="width:62px;height:62px;background:linear-gradient(135deg,#ffe082,#ff8f00);border-color:#ffd54f;font-size:20px;">HF</div>
+        <div class="bar" style="height:100px;background:linear-gradient(180deg,#ffd66b,#f59e0b);">1</div>
+        <div style="font-size:12px;color:var(--amber);font-weight:700;">Hafiz · 2.150</div>
+      </div>
+      <div class="pod">
+        <div class="ava" style="width:48px;height:48px;background:linear-gradient(135deg,#e0a878,#a86a3d);border-color:#cd8a52;font-size:15px;">RA</div>
+        <div class="bar" style="height:58px;background:linear-gradient(180deg,#d28a4f,#8d4a14);">3</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;">Raka · 1.690</div>
+      </div>
+    </div>
+    <div class="lb-row"><div class="rank">4</div><div class="ava" style="width:34px;height:34px;background:#1d3a52;color:var(--cyan);border:none;font-size:12px;">ST</div><div style="flex:1;color:var(--txt);font-weight:600;font-size:14px;">Siti Aminah</div><div class="mono" style="color:var(--cyan);font-weight:700;">1.510 XP</div></div>
+    <div class="lb-row"><div class="rank">5</div><div class="ava" style="width:34px;height:34px;background:#1d3a52;color:var(--cyan);border:none;font-size:12px;">BG</div><div style="flex:1;color:var(--txt);font-weight:600;font-size:14px;">Bagus Pratama</div><div class="mono" style="color:var(--cyan);font-weight:700;">1.450 XP</div></div>
+  </div>
+</div>
+
+<!-- ============ XP / LEVEL ============ -->
+<div class="shot" data-shot="xp_level" style="padding:30px;">
+  <div class="card xp">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      <div class="lvl-badge">🔥</div>
+      <div>
+        <div class="mono" style="font-size:11px;color:var(--muted);letter-spacing:.08em;">LEVEL 4</div>
+        <div class="disp" style="font-weight:700;font-size:22px;color:var(--txt);">Teladan</div>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <div class="disp" style="font-weight:800;font-size:26px;color:var(--cyan);">2.150</div>
+        <div class="mono" style="font-size:10px;color:var(--muted);">TOTAL XP</div>
+      </div>
+    </div>
+    <div class="xp-track"><div class="xp-fill" style="width:72%;"></div></div>
+    <div class="row" style="margin-top:10px;">
+      <span class="mono" style="font-size:11px;color:var(--muted);">Teladan</span>
+      <span class="mono" style="font-size:11px;color:var(--violet);">350 XP lagi → Master</span>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <div style="flex:1;text-align:center;padding:12px;border-radius:12px;background:rgba(0,212,212,.07);border:1px solid rgba(0,212,212,.2);">
+        <div class="disp" style="font-weight:800;font-size:22px;color:var(--cyan);">12</div>
+        <div class="mono" style="font-size:9.5px;color:var(--muted);">HARI STREAK 🔥</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:12px;border-radius:12px;background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);">
+        <div class="disp" style="font-weight:800;font-size:22px;color:var(--orange-l);">3/4</div>
+        <div class="mono" style="font-size:9.5px;color:var(--muted);">QUEST MINGGU INI</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BADGES ============ -->
+<div class="shot" data-shot="badges" style="padding:30px;">
+  <div class="card badges">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);">🎖 Koleksi Lencana</div>
+    <div class="badge-grid">
+      <div class="bdg"><div class="ic" style="background:rgba(34,197,94,.15);">✅</div><div style="font-size:12px;color:var(--txt);font-weight:600;text-align:center;">Hadir Sempurna</div></div>
+      <div class="bdg"><div class="ic" style="background:rgba(0,212,212,.15);">🎓</div><div style="font-size:12px;color:var(--txt);font-weight:600;text-align:center;">Top Akademik</div></div>
+      <div class="bdg"><div class="ic" style="background:rgba(249,115,22,.15);">🌅</div><div style="font-size:12px;color:var(--txt);font-weight:600;text-align:center;">Early Bird</div></div>
+      <div class="bdg"><div class="ic" style="background:rgba(236,72,153,.15);">❤️</div><div style="font-size:12px;color:var(--txt);font-weight:600;text-align:center;">Pahlawan Baksos</div></div>
+      <div class="bdg"><div class="ic" style="background:rgba(168,85,247,.15);">⭐</div><div style="font-size:12px;color:var(--txt);font-weight:600;text-align:center;">Rising Star</div></div>
+      <div class="bdg"><div class="ic" style="background:rgba(251,191,36,.15);">🔄</div><div style="font-size:12px;color:var(--txt);font-weight:600;text-align:center;">Comeback Kid</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCAN FACE ============ -->
+<div class="shot" data-shot="scan_face" style="padding:30px;">
+  <div class="card scan">
+    <div class="scan-ring"><span style="font-size:56px;">😊</span></div>
+    <div class="disp" style="font-weight:700;font-size:22px;color:#4ade80;">Hadir Tercatat!</div>
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-top:10px;">Hafiz Ramadhan</div>
+    <div class="mono" style="font-size:12px;color:var(--muted);">NIS 20240001 · XI IPA 1</div>
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:16px;">
+      <span class="pill paid">✓ TEPAT WAKTU</span>
+      <span class="pill" style="background:rgba(0,212,212,.12);color:var(--cyan);border:1px solid rgba(0,212,212,.3);">⏱ 06:48</span>
+    </div>
+    <div class="mono" style="font-size:11px;color:var(--muted2);margin-top:16px;">Akurasi wajah 99.2% · Lokasi terverifikasi</div>
+  </div>
+</div>
+
+<!-- ============ QR CARD ============ -->
+<div class="shot" data-shot="qr_card" style="padding:30px;">
+  <div class="card qrc">
+    <div class="disp" style="font-weight:700;font-size:16px;color:var(--txt);">Kartu Absensi QR</div>
+    <div class="qbox">
+      <svg viewBox="0 0 100 100" shape-rendering="crispEdges">
+        <rect width="100" height="100" fill="#fff"/>
+        <g fill="#0a1722">
+          <rect x="6" y="6" width="22" height="22"/><rect x="11" y="11" width="12" height="12" fill="#fff"/><rect x="14" y="14" width="6" height="6" fill="#0a1722"/>
+          <rect x="72" y="6" width="22" height="22"/><rect x="77" y="11" width="12" height="12" fill="#fff"/><rect x="80" y="14" width="6" height="6" fill="#0a1722"/>
+          <rect x="6" y="72" width="22" height="22"/><rect x="11" y="77" width="12" height="12" fill="#fff"/><rect x="14" y="80" width="6" height="6" fill="#0a1722"/>
+          <rect x="36" y="6" width="6" height="6"/><rect x="48" y="6" width="6" height="6"/><rect x="60" y="6" width="6" height="6"/>
+          <rect x="36" y="18" width="6" height="6"/><rect x="54" y="18" width="6" height="6"/>
+          <rect x="6" y="36" width="6" height="6"/><rect x="18" y="36" width="6" height="6"/><rect x="36" y="36" width="6" height="6"/><rect x="48" y="36" width="6" height="6"/><rect x="66" y="36" width="6" height="6"/><rect x="84" y="36" width="6" height="6"/>
+          <rect x="12" y="48" width="6" height="6"/><rect x="30" y="48" width="6" height="6"/><rect x="42" y="48" width="6" height="6"/><rect x="60" y="48" width="6" height="6"/><rect x="78" y="48" width="6" height="6"/>
+          <rect x="6" y="60" width="6" height="6"/><rect x="24" y="60" width="6" height="6"/><rect x="48" y="60" width="6" height="6"/><rect x="66" y="60" width="6" height="6"/><rect x="84" y="60" width="6" height="6"/>
+          <rect x="42" y="66" width="6" height="6"/><rect x="60" y="72" width="6" height="6"/><rect x="72" y="60" width="6" height="6"/>
+          <rect x="42" y="78" width="6" height="6"/><rect x="54" y="84" width="6" height="6"/><rect x="72" y="78" width="6" height="6"/><rect x="84" y="84" width="6" height="6"/>
+          <rect x="36" y="48" width="6" height="6"/><rect x="36" y="60" width="6" height="6"/>
+        </g>
+      </svg>
+    </div>
+    <div class="disp" style="font-weight:700;font-size:15px;color:var(--txt);">Siti Aminah</div>
+    <div class="mono" style="font-size:11px;color:var(--muted);">NIS 20240011 · XI IPA 1</div>
+  </div>
+</div>
+
+<!-- ============ WA NOTIF ============ -->
+<div class="shot" data-shot="wa_notif" style="padding:30px;">
+  <div class="phone">
+    <div class="wa-top">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:'Space Grotesk';">AE</div>
+      <div><div style="color:#e9edef;font-weight:600;font-size:14px;">Aethera Sekolah</div><div style="color:#8696a0;font-size:11px;">online</div></div>
+    </div>
+    <div class="wa-bubble">
+      🔔 <b>Yth. Bpk/Ibu Wali dari Hafiz</b><br><br>
+      Putra/i Anda telah <b>HADIR</b> di sekolah:<br>
+      📅 Jumat, 29 Mei 2026<br>
+      🕐 06:48 WIB<br>
+      📍 SMK Aethera<br><br>
+      Status: <b>Tepat Waktu</b> ✅
+      <span class="wa-time">06:48 ✓✓</span>
+    </div>
+    <div class="wa-bubble" style="background:#1f2c34;color:#e9edef;border-radius:14px;">
+      🏫 Hafiz telah <b>PULANG</b> pukul 15:02 WIB. Terima kasih.
+      <span class="wa-time">15:02 ✓✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ KPI ROW ============ -->
+<div class="shot" data-shot="kpi" style="padding:30px;">
+  <div class="kpi">
+    <div class="c"><div class="l">Total Siswa</div><div class="v" style="color:var(--cyan);">842</div><div class="mono" style="font-size:11px;color:var(--green);">▲ 24 siswa baru</div></div>
+    <div class="c"><div class="l">Hadir Hari Ini</div><div class="v" style="color:#4ade80;">96.4%</div><div class="mono" style="font-size:11px;color:var(--muted);">812 dari 842</div></div>
+    <div class="c"><div class="l">Terlambat</div><div class="v" style="color:var(--amber);">18</div><div class="mono" style="font-size:11px;color:var(--green);">▼ turun 31%</div></div>
+    <div class="c"><div class="l">SPP Terkumpul</div><div class="v" style="color:var(--orange-l);">89%</div><div class="mono" style="font-size:11px;color:var(--muted);">Bulan ini</div></div>
+  </div>
+</div>
+
+<!-- ============ RAPOR / NILAI ============ -->
+<div class="shot" data-shot="rapor" style="padding:30px;">
+  <div class="card" style="width:440px;padding:26px;">
+    <div class="row" style="margin-bottom:16px;">
+      <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);">📄 Rapor Digital</div>
+      <span class="pill" style="background:rgba(0,212,212,.12);color:var(--cyan);border:1px solid rgba(0,212,212,.3);">PDF SIAP CETAK</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><span style="color:var(--txt);font-size:14px;">Matematika</span><div style="display:flex;align-items:center;gap:10px;"><span class="mono" style="color:var(--txt);font-weight:700;">92</span><span class="pill paid" style="padding:2px 9px;">A</span></div></div>
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><span style="color:var(--txt);font-size:14px;">Bahasa Indonesia</span><div style="display:flex;align-items:center;gap:10px;"><span class="mono" style="color:var(--txt);font-weight:700;">88</span><span class="pill paid" style="padding:2px 9px;">A</span></div></div>
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><span style="color:var(--txt);font-size:14px;">Fisika</span><div style="display:flex;align-items:center;gap:10px;"><span class="mono" style="color:var(--txt);font-weight:700;">79</span><span class="pill" style="background:rgba(0,212,212,.12);color:var(--cyan);border:1px solid rgba(0,212,212,.3);padding:2px 9px;">B</span></div></div>
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><span style="color:var(--txt);font-size:14px;">Bahasa Inggris</span><div style="display:flex;align-items:center;gap:10px;"><span class="mono" style="color:var(--txt);font-weight:700;">90</span><span class="pill paid" style="padding:2px 9px;">A</span></div></div>
+    </div>
+    <div class="row" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+      <span class="mono" style="font-size:12px;color:var(--muted);">RATA-RATA</span>
+      <span class="disp" style="font-weight:800;font-size:24px;color:#4ade80;">87.3 · A</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RINGKASAN KEHADIRAN KELAS ============ -->
+<div class="shot" data-shot="attendance_summary" style="padding:30px;">
+  <div class="card" style="width:460px;padding:26px;">
+    <div class="row" style="margin-bottom:18px;">
+      <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);">📋 Kehadiran Hari Ini · XI IPA 1</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;">
+      <div style="text-align:center;padding:14px 6px;border-radius:12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);"><div class="disp" style="font-weight:800;font-size:26px;color:#4ade80;">28</div><div class="mono" style="font-size:9px;color:var(--muted);">HADIR</div></div>
+      <div style="text-align:center;padding:14px 6px;border-radius:12px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);"><div class="disp" style="font-weight:800;font-size:26px;color:var(--amber);">2</div><div class="mono" style="font-size:9px;color:var(--muted);">TERLAMBAT</div></div>
+      <div style="text-align:center;padding:14px 6px;border-radius:12px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);"><div class="disp" style="font-weight:800;font-size:26px;color:var(--violet);">1</div><div class="mono" style="font-size:9px;color:var(--muted);">IZIN</div></div>
+      <div style="text-align:center;padding:14px 6px;border-radius:12px;background:rgba(251,93,93,.1);border:1px solid rgba(251,93,93,.25);"><div class="disp" style="font-weight:800;font-size:26px;color:var(--rose);">1</div><div class="mono" style="font-size:9px;color:var(--muted);">ALPA</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:10px;"><span style="width:8px;height:8px;border-radius:50%;background:#4ade80;"></span><span style="color:var(--txt);font-size:13px;">Hafiz Ramadhan</span></div><span class="mono" style="font-size:12px;color:#4ade80;">06:48 · Tepat</span></div>
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:10px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);"></span><span style="color:var(--txt);font-size:13px;">Dewi Anjani</span></div><span class="mono" style="font-size:12px;color:var(--amber);">07:18 · Telat 18m</span></div>
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:10px;"><span style="width:8px;height:8px;border-radius:50%;background:#4ade80;"></span><span style="color:var(--txt);font-size:13px;">Bagus Pratama</span></div><span class="mono" style="font-size:12px;color:#4ade80;">06:52 · Tepat</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DONUT CHART KEHADIRAN ============ -->
+<div class="shot" data-shot="donut_attendance" style="padding:30px;">
+  <div class="card" style="width:380px;padding:28px;text-align:center;">
+    <div class="disp" style="font-weight:700;font-size:17px;color:var(--txt);margin-bottom:8px;">Distribusi Kehadiran 30 Hari</div>
+    <svg width="200" height="200" viewBox="0 0 42 42" style="margin:6px auto;">
+      <circle cx="21" cy="21" r="15.9" fill="none" stroke="#13283a" stroke-width="5"/>
+      <circle cx="21" cy="21" r="15.9" fill="none" stroke="#22c55e" stroke-width="5" stroke-dasharray="82 18" stroke-dashoffset="25" stroke-linecap="round"/>
+      <circle cx="21" cy="21" r="15.9" fill="none" stroke="#fbbf24" stroke-width="5" stroke-dasharray="10 90" stroke-dashoffset="-57" stroke-linecap="round"/>
+      <circle cx="21" cy="21" r="15.9" fill="none" stroke="#fb5d5d" stroke-width="5" stroke-dasharray="8 92" stroke-dashoffset="-67" stroke-linecap="round"/>
+      <text x="21" y="20" text-anchor="middle" font-size="7" font-weight="700" fill="#e8f4f8" font-family="Space Grotesk">92%</text>
+      <text x="21" y="26" text-anchor="middle" font-size="3" fill="#8baebe" font-family="JetBrains Mono">HADIR</text>
+    </svg>
+    <div style="display:flex;justify-content:center;gap:16px;margin-top:8px;">
+      <span style="font-size:12px;color:var(--muted);"><span style="color:#22c55e;">●</span> Hadir 82%</span>
+      <span style="font-size:12px;color:var(--muted);"><span style="color:#fbbf24;">●</span> Telat 10%</span>
+      <span style="font-size:12px;color:var(--muted);"><span style="color:#fb5d5d;">●</span> Alpa 8%</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BAR CHART TREN ============ -->
+<div class="shot" data-shot="bar_trend" style="padding:30px;">
+  <div class="card" style="width:440px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:17px;color:var(--txt);margin-bottom:18px;">Tren Kehadiran 6 Minggu</div>
+    <div style="display:flex;align-items:flex-end;gap:18px;height:160px;padding:0 6px;">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:108px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#00d4d4,#0a8a8a);"></div><span class="mono" style="font-size:10px;color:var(--muted);">M1</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:124px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#00d4d4,#0a8a8a);"></div><span class="mono" style="font-size:10px;color:var(--muted);">M2</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:116px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#00d4d4,#0a8a8a);"></div><span class="mono" style="font-size:10px;color:var(--muted);">M3</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:140px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#22e3a0,#0a8a5a);"></div><span class="mono" style="font-size:10px;color:var(--muted);">M4</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:132px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#00d4d4,#0a8a8a);"></div><span class="mono" style="font-size:10px;color:var(--muted);">M5</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:148px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#22e3a0,#0a8a5a);"></div><span class="mono" style="font-size:10px;color:var(--muted);">M6</span></div>
+    </div>
+    <div class="mono" style="font-size:11px;color:#4ade80;margin-top:14px;text-align:center;">▲ Kehadiran naik 6% dalam 6 minggu</div>
+  </div>
+</div>
+
+<!-- ============ DISIPLIN / KTS ============ -->
+<div class="shot" data-shot="discipline" style="padding:30px;">
+  <div class="card" style="width:440px;padding:26px;">
+    <div class="row" style="margin-bottom:16px;">
+      <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);">⚖️ Poin Disiplin Siswa</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:18px;">
+      <div style="flex:1;text-align:center;padding:16px;border-radius:14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);"><div class="disp" style="font-weight:800;font-size:30px;color:#4ade80;">92</div><div class="mono" style="font-size:10px;color:var(--muted);">POIN SIKAP</div></div>
+      <div style="flex:1;text-align:center;padding:16px;border-radius:14px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);"><div class="disp" style="font-weight:800;font-size:30px;color:var(--orange-l);">+45</div><div class="mono" style="font-size:10px;color:var(--muted);">APRESIASI</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(34,197,94,.06);border-left:3px solid #22c55e;"><span style="color:var(--txt);font-size:13px;">🏅 Juara 2 Lomba Sains</span><span class="mono" style="font-size:12px;color:#4ade80;">+20</span></div>
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(34,197,94,.06);border-left:3px solid #22c55e;"><span style="color:var(--txt);font-size:13px;">🤝 Bakti sosial sekolah</span><span class="mono" style="font-size:12px;color:#4ade80;">+15</span></div>
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(251,93,93,.06);border-left:3px solid #fb5d5d;"><span style="color:var(--txt);font-size:13px;">⚠️ Terlambat 3x bulan ini</span><span class="mono" style="font-size:12px;color:var(--rose);">−8</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MOOD TRACKER (BK) ============ -->
+<div class="shot" data-shot="mood" style="padding:30px;">
+  <div class="card" style="width:400px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:4px;">🩺 Mood Check-in Kelas</div>
+    <div class="label" style="margin-bottom:18px;">Agregat 7 hari · privasi siswa terjaga</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:8px;height:120px;margin-bottom:10px;">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:30px;border-radius:8px 8px 0 0;background:#fb5d5d;"></div><span style="font-size:22px;">😢</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:46px;border-radius:8px 8px 0 0;background:#fb923c;"></div><span style="font-size:22px;">😕</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:70px;border-radius:8px 8px 0 0;background:#fbbf24;"></div><span style="font-size:22px;">😐</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:104px;border-radius:8px 8px 0 0;background:#22c55e;"></div><span style="font-size:22px;">🙂</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:100%;height:88px;border-radius:8px 8px 0 0;background:#19e3e3;"></div><span style="font-size:22px;">😄</span></div>
+    </div>
+    <div class="mono" style="font-size:11px;color:var(--cyan);text-align:center;">Rata-rata mood: 3.8 / 5 · Cenderung positif</div>
+  </div>
+</div>
+
+<!-- ============ KONSELING BK BOOKING ============ -->
+<div class="shot" data-shot="counseling" style="padding:30px;">
+  <div class="card" style="width:420px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:4px;">💬 Booking Konsultasi BK</div>
+    <div class="label" style="margin-bottom:18px;">Pilih jadwal yang tersedia</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="row" style="padding:14px 16px;border-radius:12px;border:1px solid var(--cyan);background:rgba(0,212,212,.07);"><div><div style="color:var(--txt);font-weight:600;font-size:14px;">Senin, 2 Juni · 09:00</div><div class="label" style="font-size:11px;">Bu Sari, S.Psi · Ruang BK</div></div><span class="pill" style="background:rgba(0,212,212,.15);color:var(--cyan);border:1px solid rgba(0,212,212,.35);">TERSEDIA</span></div>
+      <div class="row" style="padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.02);"><div><div style="color:var(--txt);font-weight:600;font-size:14px;">Senin, 2 Juni · 10:30</div><div class="label" style="font-size:11px;">Bu Sari, S.Psi · Ruang BK</div></div><span class="pill" style="background:rgba(139,174,190,.12);color:var(--muted);border:1px solid var(--border);">PENUH</span></div>
+      <div class="row" style="padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.02);"><div><div style="color:var(--txt);font-weight:600;font-size:14px;">Selasa, 3 Juni · 13:00</div><div class="label" style="font-size:11px;">Pak Adi, M.Pd · Ruang BK</div></div><span class="pill" style="background:rgba(0,212,212,.15);color:var(--cyan);border:1px solid rgba(0,212,212,.35);">TERSEDIA</span></div>
+    </div>
+    <div style="margin-top:14px;padding:10px;border-radius:10px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);text-align:center;"><span class="mono" style="font-size:11px;color:#c084fc;">🔒 Bisa diajukan anonim · catatan privat hanya untuk BK</span></div>
+  </div>
+</div>
+
+<!-- ============ PERPUSTAKAAN ============ -->
+<div class="shot" data-shot="library" style="padding:30px;">
+  <div class="card" style="width:430px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:18px;">📚 Perpustakaan Digital</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="row" style="padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:12px;"><div style="width:38px;height:50px;border-radius:5px;background:linear-gradient(135deg,#00d4d4,#0a6a8a);"></div><div><div style="color:var(--txt);font-weight:600;font-size:14px;">Laskar Pelangi</div><div class="label" style="font-size:11px;">Andrea Hirata · 3 tersedia</div></div></div><span class="pill paid" style="padding:3px 10px;">PINJAM</span></div>
+      <div class="row" style="padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:12px;"><div style="width:38px;height:50px;border-radius:5px;background:linear-gradient(135deg,#f97316,#c2410c);"></div><div><div style="color:var(--txt);font-weight:600;font-size:14px;">Fisika Dasar XI</div><div class="label" style="font-size:11px;">Tim MGMP · 1 tersedia</div></div></div><span class="pill paid" style="padding:3px 10px;">PINJAM</span></div>
+      <div class="row" style="padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:12px;"><div style="width:38px;height:50px;border-radius:5px;background:linear-gradient(135deg,#a855f7,#6b21a8);"></div><div><div style="color:var(--txt);font-weight:600;font-size:14px;">Bumi Manusia</div><div class="label" style="font-size:11px;">Pramoedya · dipinjam</div></div></div><span class="pill" style="background:rgba(251,191,36,.14);color:var(--amber);border:1px solid rgba(251,191,36,.35);padding:3px 10px;">ANTRE</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PPDB FORM ============ -->
+<div class="shot" data-shot="ppdb_form" style="padding:30px;">
+  <div class="card" style="width:420px;padding:26px;">
+    <div class="row" style="margin-bottom:6px;">
+      <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);">🎓 Pendaftaran Siswa Baru</div>
+    </div>
+    <div class="label" style="margin-bottom:18px;">Gelombang 1 · 2026/2027 · Online</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div><div class="label" style="font-size:11px;margin-bottom:5px;">Nama Lengkap</div><div style="padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--txt);font-size:13px;">Ahmad Fauzan</div></div>
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;"><div class="label" style="font-size:11px;margin-bottom:5px;">NISN</div><div style="padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--txt);font-size:13px;">0098765432</div></div>
+        <div style="flex:1;"><div class="label" style="font-size:11px;margin-bottom:5px;">Asal Sekolah</div><div style="padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--txt);font-size:13px;">SMP N 2 Klaten</div></div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;padding:12px;border-radius:10px;border:1px dashed var(--cyan);background:rgba(0,212,212,.05);text-align:center;"><div style="font-size:18px;">📎</div><div class="mono" style="font-size:10px;color:var(--cyan);">Kartu Keluarga ✓</div></div>
+        <div style="flex:1;padding:12px;border-radius:10px;border:1px dashed var(--cyan);background:rgba(0,212,212,.05);text-align:center;"><div style="font-size:18px;">📎</div><div class="mono" style="font-size:10px;color:var(--cyan);">Rapor SMP ✓</div></div>
+      </div>
+    </div>
+    <div class="btn btn-pay" style="margin-top:16px;">Kirim Pendaftaran →</div>
+  </div>
+</div>
+
+<!-- ============ JADWAL / TIMETABLE ============ -->
+<div class="shot" data-shot="schedule" style="padding:30px;">
+  <div class="card" style="width:450px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:6px;">🕐 Jadwal Sekolah</div>
+    <div class="label" style="margin-bottom:18px;">Jadwal Reguler · Senin–Jumat</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+      <div style="padding:16px;border-radius:14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.22);"><div class="mono" style="font-size:10px;color:var(--muted);">🔓 BUKA ABSEN</div><div class="disp" style="font-weight:800;font-size:26px;color:#4ade80;">06:30</div></div>
+      <div style="padding:16px;border-radius:14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.22);"><div class="mono" style="font-size:10px;color:var(--muted);">⚠️ BATAS MASUK</div><div class="disp" style="font-weight:800;font-size:26px;color:var(--amber);">07:00</div></div>
+      <div style="padding:16px;border-radius:14px;background:rgba(251,93,93,.08);border:1px solid rgba(251,93,93,.22);"><div class="mono" style="font-size:10px;color:var(--muted);">🏠 JAM PULANG</div><div class="disp" style="font-weight:800;font-size:26px;color:var(--rose);">15:00</div></div>
+      <div style="padding:16px;border-radius:14px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.22);"><div class="mono" style="font-size:10px;color:var(--muted);">⏱ TOLERANSI</div><div class="disp" style="font-weight:800;font-size:26px;color:#c084fc;">15m</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODE ABSENSI SETTINGS ============ -->
+<div class="shot" data-shot="mode_settings" style="padding:30px;">
+  <div class="card" style="width:440px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:4px;">⚙️ Mode Absensi</div>
+    <div class="label" style="margin-bottom:18px;">Kepala sekolah atur metode yang dipakai</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+      <div style="padding:18px 14px;border-radius:14px;border:2px solid var(--cyan);background:rgba(0,212,212,.08);text-align:center;"><div style="font-size:26px;">😊</div><div style="color:var(--txt);font-weight:700;font-size:14px;margin-top:6px;">Wajah AI</div><div class="mono" style="font-size:9px;color:var(--cyan);margin-top:2px;">● AKTIF</div></div>
+      <div style="padding:18px 14px;border-radius:14px;border:2px solid var(--cyan);background:rgba(0,212,212,.08);text-align:center;"><div style="font-size:26px;">🔲</div><div style="color:var(--txt);font-weight:700;font-size:14px;margin-top:6px;">QR Code</div><div class="mono" style="font-size:9px;color:var(--cyan);margin-top:2px;">● AKTIF</div></div>
+      <div style="padding:18px 14px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.02);text-align:center;"><div style="font-size:26px;opacity:.6;">📝</div><div style="color:var(--muted);font-weight:700;font-size:14px;margin-top:6px;">Manual</div><div class="mono" style="font-size:9px;color:var(--muted2);margin-top:2px;">nonaktif</div></div>
+      <div style="padding:18px 14px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.02);text-align:center;"><div style="font-size:26px;opacity:.6;">📤</div><div style="color:var(--muted);font-weight:700;font-size:14px;margin-top:6px;">Impor CSV</div><div class="mono" style="font-size:9px;color:var(--muted2);margin-top:2px;">nonaktif</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PENGUMUMAN ============ -->
+<div class="shot" data-shot="announcement" style="padding:30px;">
+  <div class="card" style="width:430px;padding:24px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:16px;">📣 Pengumuman Sekolah</div>
+    <div style="padding:16px;border-radius:12px;background:rgba(249,115,22,.07);border-left:4px solid var(--orange);margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span class="pill" style="background:var(--orange);color:#fff;padding:2px 9px;">📌 PENTING</span><span class="mono" style="font-size:10px;color:var(--muted);">Hari ini</span></div>
+      <div style="color:var(--txt);font-weight:600;font-size:14px;">Ujian Tengah Semester</div>
+      <div class="label" style="font-size:12px;margin-top:4px;">UTS dimulai Senin 9 Juni. Jadwal lengkap di portal siswa.</div>
+    </div>
+    <div style="padding:16px;border-radius:12px;background:rgba(255,255,255,.03);border-left:4px solid var(--cyan);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span class="mono" style="font-size:10px;color:var(--muted);">2 hari lalu</span></div>
+      <div style="color:var(--txt);font-weight:600;font-size:14px;">Pembayaran SPP Juni</div>
+      <div class="label" style="font-size:12px;margin-top:4px;">Sudah dibuka. Bayar online lewat portal masing-masing.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GRADEBOOK MATRIX ============ -->
+<div class="shot" data-shot="gradebook_el" style="padding:30px;">
+  <div class="card" style="width:500px;padding:24px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:16px;">📊 Buku Nilai · Matematika XI IPA 1</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <tr style="color:var(--muted);font-family:'JetBrains Mono';font-size:10px;text-transform:uppercase;"><td style="padding:8px 6px;text-align:left;">Siswa</td><td style="padding:8px 6px;">Tugas</td><td style="padding:8px 6px;">UH 1</td><td style="padding:8px 6px;">UTS</td><td style="padding:8px 6px;color:var(--cyan);">Rata</td></tr>
+      <tr style="border-top:1px solid var(--border);"><td style="padding:9px 6px;color:var(--txt);">Hafiz R.</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">90</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">88</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">95</td><td style="padding:9px 6px;text-align:center;font-weight:700;color:#4ade80;">91</td></tr>
+      <tr style="border-top:1px solid var(--border);background:rgba(255,255,255,.02);"><td style="padding:9px 6px;color:var(--txt);">Dewi A.</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">85</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">80</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">88</td><td style="padding:9px 6px;text-align:center;font-weight:700;color:#4ade80;">84</td></tr>
+      <tr style="border-top:1px solid var(--border);"><td style="padding:9px 6px;color:var(--txt);">Bagus P.</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">78</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">72</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">75</td><td style="padding:9px 6px;text-align:center;font-weight:700;color:var(--amber);">75</td></tr>
+      <tr style="border-top:1px solid var(--border);background:rgba(255,255,255,.02);"><td style="padding:9px 6px;color:var(--txt);">Siti A.</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">92</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">90</td><td style="padding:9px 6px;text-align:center;color:var(--txt);">94</td><td style="padding:9px 6px;text-align:center;font-weight:700;color:#4ade80;">92</td></tr>
+    </table>
+    <div class="mono" style="font-size:10px;color:var(--cyan);margin-top:12px;">↑ Impor dari Excel/CSV · ekspor PDF · sinkron leaderboard</div>
+  </div>
+</div>
+
+<!-- ============ CHAT INTERNAL ============ -->
+<div class="shot" data-shot="chat" style="padding:30px;">
+  <div class="card" style="width:430px;padding:0;overflow:hidden;">
+    <div style="display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);">
+      <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#00d4d4,#0a6a8a);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:'Space Grotesk';">BS</div>
+      <div style="flex:1;"><div style="color:var(--txt);font-weight:600;font-size:14px;">Bu Sari (Wali Kelas)</div><div style="font-size:11px;color:#4ade80;">● online</div></div>
+      <span class="pill" style="background:rgba(168,85,247,.14);color:#c084fc;border:1px solid rgba(168,85,247,.3);">🛡 TERMODERASI</span>
+    </div>
+    <div style="padding:18px;display:flex;flex-direction:column;gap:12px;">
+      <div style="align-self:flex-start;max-width:78%;background:rgba(255,255,255,.05);border-radius:14px 14px 14px 4px;padding:10px 14px;color:var(--txt);font-size:13px;">Selamat pagi Bu, izin tanya jadwal remedial Matematika kapan ya?</div>
+      <div style="align-self:flex-end;max-width:78%;background:linear-gradient(135deg,#00b8b8,#0a6a8a);border-radius:14px 14px 4px 14px;padding:10px 14px;color:#fff;font-size:13px;">Pagi Hafiz 👋 Remedial hari Kamis jam 14:00 di Lab 2 ya. Sudah Ibu input di jadwal.<span style="display:block;text-align:right;font-size:9px;opacity:.7;margin-top:4px;">08:14 ✓✓</span></div>
+      <div style="align-self:flex-start;max-width:78%;background:rgba(255,255,255,.05);border-radius:14px 14px 14px 4px;padding:10px 14px;color:var(--txt);font-size:13px;">Baik Bu, terima kasih 🙏</div>
+    </div>
+    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+      <div style="flex:1;padding:9px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--muted);font-size:13px;">Ketik pesan…</div>
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;color:#fff;">➤</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ AI INSIGHT ============ -->
+<div class="shot" data-shot="ai_insight" style="padding:30px;">
+  <div class="card" style="width:440px;padding:26px;border:1px solid rgba(168,85,247,.35);">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#a855f7,#00d4d4);display:flex;align-items:center;justify-content:center;font-size:24px;">🤖</div>
+      <div><div class="disp" style="font-weight:700;font-size:17px;color:var(--txt);">Ringkasan AI Mingguan</div><div class="mono" style="font-size:10px;color:#c084fc;">DIBUAT OTOMATIS · SENIN 06:00</div></div>
+    </div>
+    <div style="padding:14px 16px;border-radius:12px;background:rgba(168,85,247,.07);border-left:3px solid var(--violet);font-size:13px;color:var(--txt);line-height:1.6;">
+      Kehadiran minggu ini <b style="color:#4ade80;">naik 4%</b> dibanding minggu lalu. Kelas <b>XI IPA 1</b> mencatat ketepatan waktu terbaik (96%). Perhatian: <b style="color:var(--amber);">3 siswa</b> di kelas X IPS 2 menunjukkan tren keterlambatan meningkat — disarankan tindak lanjut wali kelas.
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <div style="flex:1;text-align:center;padding:10px;border-radius:10px;background:rgba(255,255,255,.03);"><div class="disp" style="font-weight:800;font-size:18px;color:#4ade80;">96.4%</div><div class="mono" style="font-size:9px;color:var(--muted);">KEHADIRAN</div></div>
+      <div style="flex:1;text-align:center;padding:10px;border-radius:10px;background:rgba(255,255,255,.03);"><div class="disp" style="font-weight:800;font-size:18px;color:var(--cyan);">+12%</div><div class="mono" style="font-size:9px;color:var(--muted);">APRESIASI</div></div>
+      <div style="flex:1;text-align:center;padding:10px;border-radius:10px;background:rgba(255,255,255,.03);"><div class="disp" style="font-weight:800;font-size:18px;color:var(--amber);">3</div><div class="mono" style="font-size:9px;color:var(--muted);">PERLU ATENSI</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PORTAL ORANG TUA ============ -->
+<div class="shot" data-shot="parent_portal" style="padding:30px;">
+  <div class="card" style="width:420px;padding:26px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#f97316,#fb923c);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:'Space Grotesk';">HR</div>
+      <div><div class="disp" style="font-weight:700;font-size:16px;color:var(--txt);">Hafiz Ramadhan</div><div class="label" style="font-size:11px;">XI IPA 1 · Portal Orang Tua</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">
+      <div style="padding:14px;border-radius:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.22);"><div class="mono" style="font-size:9px;color:var(--muted);">HADIR HARI INI</div><div class="disp" style="font-weight:800;font-size:18px;color:#4ade80;">✓ 06:48</div></div>
+      <div style="padding:14px;border-radius:12px;background:rgba(0,212,212,.08);border:1px solid rgba(0,212,212,.22);"><div class="mono" style="font-size:9px;color:var(--muted);">RATA NILAI</div><div class="disp" style="font-weight:800;font-size:18px;color:var(--cyan);">87.3</div></div>
+      <div style="padding:14px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.22);"><div class="mono" style="font-size:9px;color:var(--muted);">SPP JUNI</div><div class="disp" style="font-weight:800;font-size:15px;color:var(--amber);">Belum Lunas</div></div>
+      <div style="padding:14px;border-radius:12px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.22);"><div class="mono" style="font-size:9px;color:var(--muted);">POIN SIKAP</div><div class="disp" style="font-weight:800;font-size:18px;color:var(--orange-l);">92</div></div>
+    </div>
+    <div class="mono" style="font-size:11px;color:var(--muted);text-align:center;padding-top:6px;border-top:1px solid var(--border);">Pantau kehadiran, nilai & tagihan anak — real-time</div>
+  </div>
+</div>
+
+<!-- ============ QUIZ ONLINE / CBT ============ -->
+<div class="shot" data-shot="quiz" style="padding:30px;">
+  <div class="card" style="width:440px;padding:26px;">
+    <div class="row" style="margin-bottom:6px;">
+      <div class="disp" style="font-weight:700;font-size:17px;color:var(--txt);">📝 Kuis Online · Sejarah</div>
+      <span class="pill" style="background:rgba(251,93,93,.14);color:var(--rose);border:1px solid rgba(251,93,93,.3);">⏱ 12:45</span>
+    </div>
+    <div class="label" style="margin-bottom:16px;">Soal 4 dari 20 · Anti-curang aktif</div>
+    <div style="padding:16px;border-radius:12px;background:rgba(255,255,255,.03);margin-bottom:14px;">
+      <div style="color:var(--txt);font-size:14px;font-weight:600;line-height:1.5;">Proklamasi kemerdekaan Indonesia dibacakan pada tanggal?</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div style="padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--muted);font-size:13px;">A. 16 Agustus 1945</div>
+      <div style="padding:12px 16px;border-radius:10px;border:1px solid var(--cyan);background:rgba(0,212,212,.08);color:var(--txt);font-size:13px;font-weight:600;">B. 17 Agustus 1945 ✓</div>
+      <div style="padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--muted);font-size:13px;">C. 18 Agustus 1945</div>
+      <div style="padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--muted);font-size:13px;">D. 1 Juni 1945</div>
+    </div>
+    <div class="mono" style="font-size:10px;color:var(--rose);margin-top:14px;text-align:center;">🔒 Soal diacak · pindah tab terdeteksi · auto-kunci jika melanggar</div>
+  </div>
+</div>
+
+<!-- ============ UKS / KLINIK ============ -->
+<div class="shot" data-shot="uks" style="padding:30px;">
+  <div class="card" style="width:430px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:16px;">🏥 UKS / Klinik Sekolah</div>
+    <div style="display:flex;gap:12px;margin-bottom:18px;">
+      <div style="flex:1;text-align:center;padding:14px;border-radius:12px;background:rgba(0,212,212,.08);border:1px solid rgba(0,212,212,.22);"><div class="disp" style="font-weight:800;font-size:24px;color:var(--cyan);">7</div><div class="mono" style="font-size:9px;color:var(--muted);">KUNJUNGAN HARI INI</div></div>
+      <div style="flex:1;text-align:center;padding:14px;border-radius:12px;background:rgba(251,93,93,.08);border:1px solid rgba(251,93,93,.22);"><div class="disp" style="font-weight:800;font-size:24px;color:var(--rose);">2</div><div class="mono" style="font-size:9px;color:var(--muted);">OBAT STOK MENIPIS</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><div><div style="color:var(--txt);font-size:13px;font-weight:600;">Dewi Anjani · X IPS 1</div><div class="label" style="font-size:11px;">Pusing & demam ringan</div></div><span class="mono" style="font-size:11px;color:var(--muted);">09:20</span></div>
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><div><div style="color:var(--txt);font-size:13px;font-weight:600;">Paracetamol</div><div class="label" style="font-size:11px;">Sisa stok</div></div><span class="pill" style="background:rgba(251,93,93,.14);color:var(--rose);border:1px solid rgba(251,93,93,.3);">8 tablet</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ EKSTRAKURIKULER ============ -->
+<div class="shot" data-shot="ekskul" style="padding:30px;">
+  <div class="card" style="width:440px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:16px;">🎯 Ekstrakurikuler</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+      <div style="padding:16px;border-radius:14px;background:rgba(0,212,212,.07);border:1px solid rgba(0,212,212,.2);"><div style="font-size:26px;">⚽</div><div style="color:var(--txt);font-weight:700;font-size:14px;margin-top:6px;">Futsal</div><div class="mono" style="font-size:10px;color:var(--muted);">32 anggota · Jumat</div></div>
+      <div style="padding:16px;border-radius:14px;background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);"><div style="font-size:26px;">🤖</div><div style="color:var(--txt);font-weight:700;font-size:14px;margin-top:6px;">Robotik</div><div class="mono" style="font-size:10px;color:var(--muted);">18 anggota · Rabu</div></div>
+      <div style="padding:16px;border-radius:14px;background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.2);"><div style="font-size:26px;">🎭</div><div style="color:var(--txt);font-weight:700;font-size:14px;margin-top:6px;">Teater</div><div class="mono" style="font-size:10px;color:var(--muted);">24 anggota · Kamis</div></div>
+      <div style="padding:16px;border-radius:14px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);"><div style="font-size:26px;">📷</div><div style="color:var(--txt);font-weight:700;font-size:14px;margin-top:6px;">Fotografi</div><div class="mono" style="font-size:10px;color:var(--muted);">15 anggota · Sabtu</div></div>
+    </div>
+    <div class="mono" style="font-size:10px;color:var(--cyan);margin-top:14px;text-align:center;">Prestasi tim otomatis menambah poin apresiasi anggota</div>
+  </div>
+</div>
+
+<!-- ============ ACARA SEKOLAH / EVENTS ============ -->
+<div class="shot" data-shot="events" style="padding:30px;">
+  <div class="card" style="width:430px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:16px;">📅 Acara Sekolah</div>
+    <div style="display:flex;flex-direction:column;gap:11px;">
+      <div style="display:flex;gap:14px;padding:14px;border-radius:12px;background:rgba(249,115,22,.06);border-left:4px solid var(--orange);">
+        <div style="text-align:center;min-width:48px;"><div class="disp" style="font-weight:800;font-size:22px;color:var(--orange-l);">09</div><div class="mono" style="font-size:10px;color:var(--muted);">JUN</div></div>
+        <div><div style="color:var(--txt);font-weight:600;font-size:14px;">Ujian Tengah Semester</div><div class="label" style="font-size:11px;">07:30 · Seluruh kelas</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:14px;border-radius:12px;background:rgba(0,212,212,.06);border-left:4px solid var(--cyan);">
+        <div style="text-align:center;min-width:48px;"><div class="disp" style="font-weight:800;font-size:22px;color:var(--cyan);">15</div><div class="mono" style="font-size:10px;color:var(--muted);">JUN</div></div>
+        <div><div style="color:var(--txt);font-weight:600;font-size:14px;">Class Meeting</div><div class="label" style="font-size:11px;">Lomba antar kelas · RSVP dibuka</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:14px;border-radius:12px;background:rgba(168,85,247,.06);border-left:4px solid var(--violet);">
+        <div style="text-align:center;min-width:48px;"><div class="disp" style="font-weight:800;font-size:22px;color:#c084fc;">22</div><div class="mono" style="font-size:10px;color:var(--muted);">JUN</div></div>
+        <div><div style="color:var(--txt);font-weight:600;font-size:14px;">Pentas Seni Akhir Tahun</div><div class="label" style="font-size:11px;">18:00 · Aula sekolah</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SURAT OTOMATIS ============ -->
+<div class="shot" data-shot="letters" style="padding:30px;">
+  <div class="card" style="width:400px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:6px;">📃 Surat Otomatis</div>
+    <div class="label" style="margin-bottom:18px;">Generate surat resmi dalam 1 klik</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="row" style="padding:13px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">📄</span><span style="color:var(--txt);font-size:13px;">Surat Keterangan Aktif</span></div><span class="pill paid" style="padding:3px 10px;">PDF</span></div>
+      <div class="row" style="padding:13px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">📄</span><span style="color:var(--txt);font-size:13px;">Surat Kelakuan Baik</span></div><span class="pill paid" style="padding:3px 10px;">PDF</span></div>
+      <div class="row" style="padding:13px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">📄</span><span style="color:var(--txt);font-size:13px;">Surat Panggilan Orang Tua</span></div><span class="pill paid" style="padding:3px 10px;">PDF</span></div>
+    </div>
+    <div class="mono" style="font-size:10px;color:var(--cyan);margin-top:14px;text-align:center;">Otomatis terisi data siswa · kop & TTD digital</div>
+  </div>
+</div>
+
+<!-- ============ INVENTARIS ============ -->
+<div class="shot" data-shot="inventory" style="padding:30px;">
+  <div class="card" style="width:430px;padding:26px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:16px;">📦 Inventaris Aset Sekolah</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><div><div style="color:var(--txt);font-size:13px;font-weight:600;">Proyektor Epson</div><div class="label" style="font-size:11px;">Lab Komputer · 12 unit</div></div><span class="pill paid" style="padding:3px 10px;">BAIK</span></div>
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><div><div style="color:var(--txt);font-size:13px;font-weight:600;">Kursi Siswa</div><div class="label" style="font-size:11px;">Ruang Kelas · 840 unit</div></div><span class="pill" style="background:rgba(251,191,36,.14);color:var(--amber);border:1px solid rgba(251,191,36,.3);padding:3px 10px;">12 RUSAK</span></div>
+      <div class="row" style="padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><div><div style="color:var(--txt);font-size:13px;font-weight:600;">Komputer PC</div><div class="label" style="font-size:11px;">Lab Komputer · 40 unit</div></div><span class="pill paid" style="padding:3px 10px;">BAIK</span></div>
+    </div>
+    <div class="mono" style="font-size:10px;color:var(--cyan);margin-top:14px;text-align:center;">Lacak kondisi & lokasi aset · riwayat audit lengkap</div>
+  </div>
+</div>
+
+<!-- ============ PERIZINAN ONLINE ============ -->
+<div class="shot" data-shot="leave_request" style="padding:30px;">
+  <div class="card" style="width:420px;padding:26px;">
+    <div class="row" style="margin-bottom:6px;">
+      <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);">📝 Pengajuan Izin / Sakit</div>
+      <span class="pill paid">✓ DISETUJUI</span>
+    </div>
+    <div class="label" style="margin-bottom:18px;">Diajukan orang tua · diverifikasi wali kelas</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;"><div class="label" style="font-size:11px;margin-bottom:5px;">Jenis</div><div style="padding:11px 14px;border-radius:10px;border:1px solid var(--cyan);background:rgba(0,212,212,.08);color:var(--cyan);font-size:13px;font-weight:600;">🤒 Sakit</div></div>
+        <div style="flex:1;"><div class="label" style="font-size:11px;margin-bottom:5px;">Tanggal</div><div style="padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--txt);font-size:13px;">2–3 Jun 2026</div></div>
+      </div>
+      <div><div class="label" style="font-size:11px;margin-bottom:5px;">Alasan</div><div style="padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--txt);font-size:13px;">Demam, istirahat sesuai anjuran dokter</div></div>
+      <div style="padding:13px;border-radius:10px;border:1px dashed var(--green);background:rgba(34,197,94,.05);display:flex;align-items:center;gap:10px;"><span style="font-size:20px;">📎</span><div><div style="color:var(--txt);font-size:13px;font-weight:600;">Surat_Dokter.pdf</div><div class="mono" style="font-size:10px;color:#4ade80;">Bukti terlampir ✓</div></div></div>
+    </div>
+    <div class="row" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+      <span class="mono" style="font-size:11px;color:var(--muted);">Otomatis sinkron ke absensi</span>
+      <span class="mono" style="font-size:11px;color:#4ade80;">✓ wali kelas: Bu Sari</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABSENSI PER MAPEL + JURNAL ============ -->
+<div class="shot" data-shot="subject_attendance" style="padding:30px;">
+  <div class="card" style="width:460px;padding:26px;">
+    <div class="row" style="margin-bottom:4px;">
+      <div class="disp" style="font-weight:700;font-size:17px;color:var(--txt);">📒 Absensi Matematika · Jam ke-3</div>
+    </div>
+    <div class="label" style="margin-bottom:14px;">XI IPA 1 · Pak Budi · 08:30–09:15</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <span class="pill" style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.4);">✓ Semua Hadir</span>
+      <span class="pill" style="background:rgba(0,212,212,.1);color:var(--cyan);border:1px solid rgba(0,212,212,.3);">28 Hadir · 2 Lain</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px;">
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><span style="color:var(--txt);font-size:13px;">Hafiz Ramadhan</span><span class="pill paid" style="padding:2px 10px;">HADIR</span></div>
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><span style="color:var(--txt);font-size:13px;">Dewi Anjani</span><span class="pill" style="background:rgba(168,85,247,.14);color:#c084fc;border:1px solid rgba(168,85,247,.35);padding:2px 10px;">IZIN</span></div>
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><span style="color:var(--txt);font-size:13px;">Bagus Pratama</span><span class="pill paid" style="padding:2px 10px;">HADIR</span></div>
+      <div class="row" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.03);"><span style="color:var(--txt);font-size:13px;">Siti Aminah</span><span class="pill" style="background:rgba(251,191,36,.14);color:var(--amber);border:1px solid rgba(251,191,36,.35);padding:2px 10px;">SAKIT</span></div>
+    </div>
+    <div style="margin-top:14px;padding:13px 14px;border-radius:10px;background:rgba(249,115,22,.06);border-left:3px solid var(--orange);">
+      <div class="mono" style="font-size:10px;color:var(--orange-l);margin-bottom:4px;">📝 JURNAL MENGAJAR</div>
+      <div style="color:var(--txt);font-size:12.5px;line-height:1.5;">Materi: Trigonometri — aturan sinus & cosinus. Tugas latihan hal. 84 no. 1–10.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ JADWAL PELAJARAN (MATRIX) ============ -->
+<div class="shot" data-shot="timetable" style="padding:30px;">
+  <div class="card" style="width:520px;padding:24px;">
+    <div class="disp" style="font-weight:700;font-size:18px;color:var(--txt);margin-bottom:16px;">🗓 Jadwal Pelajaran · XI IPA 1</div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <tr style="color:var(--muted);font-family:'JetBrains Mono';font-size:9.5px;text-transform:uppercase;">
+        <td style="padding:7px 5px;text-align:left;">Jam</td><td style="padding:7px 5px;text-align:center;">Senin</td><td style="padding:7px 5px;text-align:center;">Selasa</td><td style="padding:7px 5px;text-align:center;">Rabu</td><td style="padding:7px 5px;text-align:center;">Kamis</td><td style="padding:7px 5px;text-align:center;">Jumat</td>
+      </tr>
+      <tr style="border-top:1px solid var(--border);"><td style="padding:8px 5px;color:var(--muted);font-family:'JetBrains Mono';font-size:10px;">07:00</td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(0,212,212,.14);color:var(--cyan);font-weight:600;">MTK</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(249,115,22,.14);color:var(--orange-l);font-weight:600;">B.IND</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(168,85,247,.14);color:#c084fc;font-weight:600;">FIS</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(34,197,94,.14);color:#4ade80;font-weight:600;">B.ING</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(0,212,212,.14);color:var(--cyan);font-weight:600;">KIM</div></td>
+      </tr>
+      <tr style="border-top:1px solid var(--border);"><td style="padding:8px 5px;color:var(--muted);font-family:'JetBrains Mono';font-size:10px;">08:30</td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(0,212,212,.14);color:var(--cyan);font-weight:600;">MTK</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(34,197,94,.14);color:#4ade80;font-weight:600;">BIO</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(168,85,247,.14);color:#c084fc;font-weight:600;">FIS</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(249,115,22,.14);color:var(--orange-l);font-weight:600;">SEJ</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(34,197,94,.14);color:#4ade80;font-weight:600;">B.ING</div></td>
+      </tr>
+      <tr style="border-top:1px solid var(--border);"><td style="padding:8px 5px;color:var(--muted2);font-family:'JetBrains Mono';font-size:9px;">10:00</td>
+        <td colspan="5" style="padding:6px 4px;"><div style="border-radius:7px;padding:5px;text-align:center;background:rgba(255,255,255,.04);color:var(--muted);font-size:10px;">— Istirahat —</div></td>
+      </tr>
+      <tr style="border-top:1px solid var(--border);"><td style="padding:8px 5px;color:var(--muted);font-family:'JetBrains Mono';font-size:10px;">10:15</td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(34,197,94,.14);color:#4ade80;font-weight:600;">B.ING</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(0,212,212,.14);color:var(--cyan);font-weight:600;">MTK</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(249,115,22,.14);color:var(--orange-l);font-weight:600;">PKN</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(168,85,247,.14);color:#c084fc;font-weight:600;">SBK</div></td>
+        <td style="padding:6px 4px;"><div style="border-radius:7px;padding:6px 4px;text-align:center;background:rgba(0,212,212,.14);color:var(--cyan);font-weight:600;">KIM</div></td>
+      </tr>
+    </table>
+    <div class="mono" style="font-size:10px;color:var(--cyan);margin-top:14px;text-align:center;">Tersinkron dengan absensi per mata pelajaran & jurnal guru</div>
+  </div>
+</div>
+
+<!-- ============ KEAMANAN 2FA + AUDIT LOG ============ -->
+<div class="shot" data-shot="security" style="padding:30px;">
+  <div class="card" style="width:440px;padding:26px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#22c55e,#00d4d4);display:flex;align-items:center;justify-content:center;font-size:24px;">🔐</div>
+      <div><div class="disp" style="font-weight:700;font-size:17px;color:var(--txt);">Keamanan & Audit</div><div class="mono" style="font-size:10px;color:#4ade80;">DATA TERLINDUNGI</div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <div style="flex:1;padding:14px;border-radius:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);text-align:center;"><div style="font-size:22px;">🔑</div><div style="color:var(--txt);font-weight:700;font-size:13px;margin-top:4px;">2FA Aktif</div><div class="mono" style="font-size:9px;color:#4ade80;">verifikasi 2 langkah</div></div>
+      <div style="flex:1;padding:14px;border-radius:12px;background:rgba(0,212,212,.08);border:1px solid rgba(0,212,212,.25);text-align:center;"><div style="font-size:22px;">🛡️</div><div style="color:var(--txt);font-weight:700;font-size:13px;margin-top:4px;">Enkripsi</div><div class="mono" style="font-size:9px;color:var(--cyan);">AES-256 · HTTPS</div></div>
+    </div>
+    <div class="mono" style="font-size:10px;color:var(--muted);margin-bottom:8px;letter-spacing:.06em;">📜 CATATAN AUDIT TERAKHIR</div>
+    <div style="display:flex;flex-direction:column;gap:7px;">
+      <div class="row" style="padding:9px 13px;border-radius:9px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:9px;"><span style="width:7px;height:7px;border-radius:50%;background:#4ade80;"></span><span style="color:var(--txt);font-size:12px;">Login admin</span></div><span class="mono" style="font-size:10px;color:var(--muted);">08:01 · IP terverifikasi</span></div>
+      <div class="row" style="padding:9px 13px;border-radius:9px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:9px;"><span style="width:7px;height:7px;border-radius:50%;background:var(--cyan);"></span><span style="color:var(--txt);font-size:12px;">Ubah nilai · Pak Budi</span></div><span class="mono" style="font-size:10px;color:var(--muted);">09:22</span></div>
+      <div class="row" style="padding:9px 13px;border-radius:9px;background:rgba(255,255,255,.03);"><div style="display:flex;align-items:center;gap:9px;"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);"></span><span style="color:var(--txt);font-size:12px;">Ekspor data keuangan</span></div><span class="mono" style="font-size:10px;color:var(--muted);">10:05 · tercatat</span></div>
+    </div>
+    <div class="mono" style="font-size:10px;color:var(--cyan);margin-top:14px;text-align:center;">Setiap aksi penting terekam · hak akses berjenjang per peran</div>
+  </div>
+</div>
+
+<!-- ============ ROI / PENGHEMATAN ============ -->
+<div class="shot" data-shot="roi" style="padding:30px;">
+  <div class="card" style="width:540px;padding:28px;">
+    <div class="disp" style="font-weight:700;font-size:19px;color:var(--txt);margin-bottom:4px;">⚡ Satu Platform, Bukan 5 Sistem Terpisah</div>
+    <div class="label" style="margin-bottom:20px;">Estimasi ilustratif untuk sekolah ±1.000 siswa (biaya tahunan)</div>
+    <div style="display:flex;gap:16px;align-items:stretch;">
+      <div style="flex:1;padding:18px;border-radius:14px;background:rgba(251,93,93,.07);border:1px solid rgba(251,93,93,.25);">
+        <div class="mono" style="font-size:10px;color:var(--rose);margin-bottom:12px;letter-spacing:.06em;">❌ MEMBANGUN TERPISAH</div>
+        <div style="display:flex;flex-direction:column;gap:9px;font-size:12px;color:var(--muted);">
+          <div class="row"><span>Sistem absensi biometrik</span><span style="color:var(--txt);">±20 jt</span></div>
+          <div class="row"><span>Sistem keuangan/SPP</span><span style="color:var(--txt);">±25 jt</span></div>
+          <div class="row"><span>LMS & e-rapor</span><span style="color:var(--txt);">±30 jt</span></div>
+          <div class="row"><span>Sistem info siswa (SIS)</span><span style="color:var(--txt);">±25 jt</span></div>
+          <div class="row"><span>Gateway WA + maintenance</span><span style="color:var(--txt);">±15 jt</span></div>
+        </div>
+        <div class="row" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(251,93,93,.25);"><span style="color:var(--rose);font-weight:700;font-size:13px;">Total + ribet</span><span class="disp" style="font-weight:800;font-size:22px;color:var(--rose);">±115 jt</span></div>
+      </div>
+      <div style="display:flex;align-items:center;"><span style="font-size:28px;color:var(--orange);">→</span></div>
+      <div style="flex:1;padding:18px;border-radius:14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);">
+        <div class="mono" style="font-size:10px;color:#4ade80;margin-bottom:12px;letter-spacing:.06em;">✅ SATU AETHERA</div>
+        <div style="display:flex;flex-direction:column;gap:9px;font-size:12px;color:var(--muted);">
+          <div class="row"><span>Absensi Wajah + QR</span><span style="color:#4ade80;">✓</span></div>
+          <div class="row"><span>SPP Online + WhatsApp</span><span style="color:#4ade80;">✓</span></div>
+          <div class="row"><span>LMS, Nilai & e-Rapor</span><span style="color:#4ade80;">✓</span></div>
+          <div class="row"><span>Gamifikasi + 12 modul</span><span style="color:#4ade80;">✓</span></div>
+          <div class="row"><span>Web + Aplikasi Android</span><span style="color:#4ade80;">✓</span></div>
+        </div>
+        <div class="row" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(34,197,94,.3);"><span style="color:#4ade80;font-weight:700;font-size:13px;">Paket Sekolah</span><span class="disp" style="font-weight:800;font-size:22px;color:#4ade80;">45,5 jt</span></div>
+      </div>
+    </div>
+    <div style="margin-top:16px;text-align:center;padding:11px;border-radius:10px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.22);">
+      <span class="disp" style="font-weight:700;font-size:14px;color:var(--orange-l);">Satu langganan terintegrasi + setup, training & dukungan — bukan 5 vendor terpisah</span>
+    </div>
+    <div class="mono" style="font-size:9px;color:var(--muted2);margin-top:10px;text-align:center;">*Estimasi ilustratif; biaya nyata tergantung vendor & kebutuhan sekolah.</div>
+  </div>
+</div>
+
+<!-- ============ APP ANDROID — 3 MOCKUP HALAMAN HP ============ -->
+<style>
+  .app-phone{width:300px;border-radius:38px;background:#0a141d;border:9px solid #18242e;padding:0;box-shadow:0 26px 70px rgba(0,0,0,.55);overflow:hidden;}
+  .app-notch{height:26px;display:flex;align-items:center;justify-content:center;}
+  .app-notch::after{content:'';width:90px;height:7px;border-radius:99px;background:#18242e;}
+  .app-status{display:flex;justify-content:space-between;align-items:center;padding:2px 22px 8px;font-family:'JetBrains Mono';font-size:10px;color:var(--muted);}
+  .app-body{padding:14px 16px 22px;}
+  .app-nav{display:flex;justify-content:space-around;align-items:center;padding:12px 0 6px;border-top:1px solid var(--border);margin-top:14px;}
+  .app-nav span{font-size:19px;opacity:.45;}
+  .app-nav span.on{opacity:1;}
+</style>
+
+<!-- APP 1: Beranda Siswa -->
+<div class="shot" data-shot="app_home" style="padding:30px;">
+  <div class="app-phone">
+    <div class="app-notch"></div>
+    <div class="app-status"><span>06:42</span><span>📶 🔋</span></div>
+    <div class="app-body">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:16px;">
+        <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#00d4d4,#a855f7);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:'Space Grotesk';">HR</div>
+        <div><div class="mono" style="font-size:10px;color:var(--muted);">Selamat pagi 👋</div><div class="disp" style="font-weight:700;font-size:16px;color:var(--txt);">Hafiz Ramadhan</div></div>
+      </div>
+      <div style="border-radius:16px;padding:16px;background:linear-gradient(135deg,rgba(34,197,94,.18),rgba(0,212,212,.1));border:1px solid rgba(34,197,94,.3);margin-bottom:14px;">
+        <div class="mono" style="font-size:10px;color:#4ade80;">STATUS HARI INI</div>
+        <div class="disp" style="font-weight:800;font-size:22px;color:#4ade80;margin-top:2px;">✓ Hadir · 06:48</div>
+        <div class="mono" style="font-size:10px;color:var(--muted);margin-top:2px;">Tepat waktu · XI IPA 1</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div style="text-align:center;"><div style="width:46px;height:46px;border-radius:14px;background:rgba(249,115,22,.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">💳</div><div style="font-size:9px;color:var(--muted);margin-top:5px;">SPP</div></div>
+        <div style="text-align:center;"><div style="width:46px;height:46px;border-radius:14px;background:rgba(0,212,212,.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">📊</div><div style="font-size:9px;color:var(--muted);margin-top:5px;">Nilai</div></div>
+        <div style="text-align:center;"><div style="width:46px;height:46px;border-radius:14px;background:rgba(168,85,247,.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">🗓</div><div style="font-size:9px;color:var(--muted);margin-top:5px;">Jadwal</div></div>
+        <div style="text-align:center;"><div style="width:46px;height:46px;border-radius:14px;background:rgba(34,197,94,.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">🏆</div><div style="font-size:9px;color:var(--muted);margin-top:5px;">Poin</div></div>
+      </div>
+      <div style="border-radius:14px;padding:13px 15px;background:rgba(255,255,255,.03);border:1px solid var(--border);margin-top:14px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:18px;">🔔</span><div style="font-size:11.5px;color:var(--txt);">UTS dimulai Senin 9 Juni — cek jadwal.</div>
+      </div>
+      <div class="app-nav"><span class="on">🏠</span><span>🗓</span><span>💬</span><span>👤</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP 2: Absen Wajah Live -->
+<div class="shot" data-shot="app_scan" style="padding:30px;">
+  <div class="app-phone">
+    <div class="app-notch"></div>
+    <div class="app-status"><span>06:47</span><span>📶 🔋</span></div>
+    <div class="app-body" style="text-align:center;">
+      <div class="disp" style="font-weight:700;font-size:16px;color:var(--txt);margin-bottom:4px;">Absen Wajah</div>
+      <div class="mono" style="font-size:10px;color:var(--muted);margin-bottom:16px;">Posisikan wajah dalam bingkai</div>
+      <div style="position:relative;width:200px;height:240px;margin:0 auto;border-radius:20px;background:linear-gradient(160deg,#10303a,#0a1722);overflow:hidden;border:1px solid var(--border);">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:90px;">🧑</div>
+        <div style="position:absolute;top:24px;left:50%;transform:translateX(-50%);width:130px;height:160px;border-radius:50% 50% 48% 48%;border:3px solid var(--green);box-shadow:0 0 30px rgba(34,197,94,.5);"></div>
+        <div style="position:absolute;left:18px;top:18px;width:20px;height:20px;border-left:3px solid var(--cyan);border-top:3px solid var(--cyan);"></div>
+        <div style="position:absolute;right:18px;top:18px;width:20px;height:20px;border-right:3px solid var(--cyan);border-top:3px solid var(--cyan);"></div>
+        <div style="position:absolute;left:18px;bottom:18px;width:20px;height:20px;border-left:3px solid var(--cyan);border-bottom:3px solid var(--cyan);"></div>
+        <div style="position:absolute;right:18px;bottom:18px;width:20px;height:20px;border-right:3px solid var(--cyan);border-bottom:3px solid var(--cyan);"></div>
+      </div>
+      <div style="margin-top:16px;padding:11px;border-radius:12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);">
+        <div class="disp" style="font-weight:700;font-size:15px;color:#4ade80;">😊 Wajah terdeteksi</div>
+        <div class="mono" style="font-size:10px;color:var(--muted);margin-top:2px;">Akurasi 99.2% · 📍 lokasi sah</div>
+      </div>
+      <div style="margin-top:14px;padding:13px;border-radius:14px;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;font-weight:700;font-size:14px;">✓ Catat Kehadiran</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP 3: Tagihan & Bayar SPP -->
+<div class="shot" data-shot="app_bills" style="padding:30px;">
+  <div class="app-phone">
+    <div class="app-notch"></div>
+    <div class="app-status"><span>19:10</span><span>📶 🔋</span></div>
+    <div class="app-body">
+      <div class="disp" style="font-weight:700;font-size:16px;color:var(--txt);margin-bottom:14px;">Tagihan Saya</div>
+      <div style="border-radius:16px;padding:16px;background:linear-gradient(135deg,rgba(249,115,22,.16),rgba(168,85,247,.08));border:1px solid rgba(249,115,22,.3);margin-bottom:12px;">
+        <div class="row"><span class="mono" style="font-size:10px;color:var(--amber);">● BELUM LUNAS</span><span class="mono" style="font-size:10px;color:var(--muted);">Jatuh tempo 12 Jun</span></div>
+        <div class="label" style="font-size:11px;margin-top:8px;">SPP Bulanan · Juni 2026</div>
+        <div class="disp" style="font-weight:800;font-size:28px;color:var(--txt);margin-top:2px;">Rp 150.000</div>
+        <div style="margin-top:12px;padding:12px;border-radius:12px;background:linear-gradient(135deg,var(--orange),var(--orange-l));color:#fff;text-align:center;font-weight:700;font-size:14px;">💳 Bayar Online</div>
+      </div>
+      <div style="border-radius:14px;padding:13px 15px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.22);margin-bottom:9px;">
+        <div class="row"><span style="color:var(--txt);font-size:13px;">SPP Mei 2026</span><span class="pill paid" style="padding:2px 9px;">LUNAS</span></div>
+        <div class="mono" style="font-size:10px;color:var(--muted);margin-top:4px;">Dibayar 03 Mei · QRIS</div>
+      </div>
+      <div style="border-radius:14px;padding:13px 15px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.22);">
+        <div class="row"><span style="color:var(--txt);font-size:13px;">SPP April 2026</span><span class="pill paid" style="padding:2px 9px;">LUNAS</span></div>
+        <div class="mono" style="font-size:10px;color:var(--muted);margin-top:4px;">Dibayar 02 Apr · VA BCA</div>
+      </div>
+      <div class="app-nav"><span>🏠</span><span>🗓</span><span class="on">💳</span><span>👤</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ COVER PAGE (CYBER-BIOMETRIC, FULL PAGE) ============ -->
+<div class="shot" data-shot="cover_page" style="padding:0;">
+  <div style="position:relative;width:1300px;height:1838px;overflow:hidden;font-family:'Inter',sans-serif;
+       background:radial-gradient(120% 75% at 50% -5%, rgba(0,184,184,.20), transparent 58%),
+                  radial-gradient(90% 60% at 50% 105%, rgba(0,212,212,.12), transparent 55%),
+                  linear-gradient(180deg,#06121b 0%, #050a0f 60%, #04080c 100%);">
+    <div style="position:absolute;inset:0;background-image:
+         linear-gradient(rgba(0,184,184,.085) 1px,transparent 1px),
+         linear-gradient(90deg,rgba(0,184,184,.085) 1px,transparent 1px);
+         background-size:54px 54px;"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%, transparent 50%, rgba(3,6,10,.72) 100%);"></div>
+
+    <div style="position:absolute;left:52px;top:52px;width:78px;height:78px;border-left:3px solid var(--cyan);border-top:3px solid var(--cyan);opacity:.8;"></div>
+    <div style="position:absolute;right:52px;top:52px;width:78px;height:78px;border-right:3px solid var(--cyan);border-top:3px solid var(--cyan);opacity:.8;"></div>
+    <div style="position:absolute;left:52px;bottom:52px;width:78px;height:78px;border-left:3px solid var(--cyan);border-bottom:3px solid var(--cyan);opacity:.8;"></div>
+    <div style="position:absolute;right:52px;bottom:52px;width:78px;height:78px;border-right:3px solid var(--cyan);border-bottom:3px solid var(--cyan);opacity:.8;"></div>
+
+    <div style="position:absolute;left:78px;right:78px;top:74px;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.18em;">
+      <span style="color:var(--cyan);">AETHERA·OS // v1.0</span>
+      <span style="color:#4a6b82;display:flex;align-items:center;gap:9px;"><span style="width:9px;height:9px;border-radius:50%;background:#00e676;box-shadow:0 0 12px #00e676;"></span>SECURE SESSION</span>
+    </div>
+
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <img src="frontend/public/logo.png" style="width:128px;height:128px;border-radius:28px;box-shadow:0 0 50px rgba(0,212,212,.5);margin-bottom:34px;" />
+      <div style="font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:.42em;color:var(--cyan);margin-bottom:22px;padding-left:.42em;">SCHOOL MANAGEMENT PLATFORM</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:158px;line-height:.92;letter-spacing:-.02em;color:#eafdfd;text-shadow:0 0 60px rgba(0,212,212,.55), 0 0 120px rgba(0,184,184,.3);">AETHERA</div>
+      <div style="width:150px;height:3px;margin:40px 0 34px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);box-shadow:0 0 18px rgba(0,212,212,.7);"></div>
+      <div style="font-family:'Inter',sans-serif;font-weight:300;font-size:31px;line-height:1.5;color:#9fc3cf;max-width:880px;">Satu platform untuk absensi AI, pembelajaran,<br/>pembayaran SPP online &amp; komunikasi orang tua.</div>
+      <div style="display:flex;gap:16px;margin-top:48px;font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.08em;">
+        <span style="padding:11px 22px;border:1px solid rgba(0,212,212,.4);border-radius:999px;color:var(--cyan);background:rgba(0,212,212,.06);">FACE-ID</span>
+        <span style="padding:11px 22px;border:1px solid rgba(0,212,212,.4);border-radius:999px;color:var(--cyan);background:rgba(0,212,212,.06);">SPP ONLINE</span>
+        <span style="padding:11px 22px;border:1px solid rgba(0,212,212,.4);border-radius:999px;color:var(--cyan);background:rgba(0,212,212,.06);">LMS</span>
+        <span style="padding:11px 22px;border:1px solid rgba(0,212,212,.4);border-radius:999px;color:var(--cyan);background:rgba(0,212,212,.06);">WHATSAPP</span>
+      </div>
+    </div>
+
+    <div style="position:absolute;left:130px;right:130px;top:1290px;height:2px;background:linear-gradient(90deg,transparent,rgba(0,212,212,.85),transparent);box-shadow:0 0 22px rgba(0,212,212,.6);"></div>
+
+    <div style="position:absolute;left:78px;right:78px;bottom:96px;">
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,184,184,.5),transparent);margin-bottom:30px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+        <div style="text-align:left;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.26em;color:var(--cyan);margin-bottom:12px;">PROPOSAL PENAWARAN KERJA SAMA</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:26px;color:#e8f4f8;">Andy Siswanto A.B</div>
+          <div style="font-family:'Inter',sans-serif;font-size:17px;color:#8baebe;margin-top:3px;">Founder Aethera</div>
+        </div>
+        <div style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:15px;color:#8baebe;line-height:1.9;">
+          <div style="color:var(--cyan);">aethera.my.id</div>
+          <div>0812-9315-9011</div>
+          <div>Klaten, Jawa Tengah</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CTA BANNER (CYBER, WIDE) ============ -->
+<div class="shot" data-shot="cta_banner" style="padding:0;">
+  <div style="position:relative;width:1300px;height:560px;overflow:hidden;font-family:'Inter',sans-serif;
+       background:radial-gradient(120% 140% at 50% 0%, rgba(0,184,184,.20), transparent 60%),
+                  linear-gradient(180deg,#06121b,#04080c);">
+    <div style="position:absolute;inset:0;background-image:
+         linear-gradient(rgba(0,184,184,.08) 1px,transparent 1px),
+         linear-gradient(90deg,rgba(0,184,184,.08) 1px,transparent 1px);
+         background-size:48px 48px;"></div>
+    <div style="position:absolute;left:40px;top:40px;width:58px;height:58px;border-left:3px solid var(--cyan);border-top:3px solid var(--cyan);opacity:.8;"></div>
+    <div style="position:absolute;right:40px;bottom:40px;width:58px;height:58px;border-right:3px solid var(--cyan);border-bottom:3px solid var(--cyan);opacity:.8;"></div>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.34em;color:var(--cyan);margin-bottom:18px;padding-left:.34em;">MULAI DIGITALISASI SEKOLAH ANDA</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:62px;color:#eafdfd;text-shadow:0 0 44px rgba(0,212,212,.5);">aethera.my.id</div>
+      <div style="display:flex;gap:40px;margin-top:34px;font-family:'JetBrains Mono',monospace;font-size:18px;color:#9fc3cf;">
+        <span><span style="color:var(--cyan);">WA</span>&nbsp;&nbsp;0812-9315-9011</span>
+        <span><span style="color:var(--cyan);">@</span>&nbsp;&nbsp;Aethera.pro@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TECH STACK / ARSITEKTUR (CYBER PANEL) ============ -->
+<div class="shot" data-shot="techstack" style="padding:30px;">
+  <div style="width:760px;border-radius:20px;overflow:hidden;border:1px solid #143042;
+       background:radial-gradient(120% 80% at 50% -10%, rgba(0,184,184,.12), transparent 55%),linear-gradient(180deg,#0a1722,#06121b);box-shadow:0 22px 60px rgba(0,0,0,.5);">
+    <div style="display:flex;align-items:center;gap:8px;padding:14px 22px;border-bottom:1px solid #143042;background:rgba(0,0,0,.2);">
+      <span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span>
+      <span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span>
+      <span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span>
+      <span class="mono" style="margin-left:14px;font-size:12px;color:#5b7a8c;letter-spacing:.1em;">aethera://arsitektur-sistem</span>
+      <span class="mono" style="margin-left:auto;font-size:11px;color:#00e676;">● ONLINE</span>
+    </div>
+    <div style="padding:26px;">
+      <div class="mono" style="font-size:11px;color:var(--cyan);letter-spacing:.14em;margin-bottom:16px;">// DIBANGUN DI ATAS TEKNOLOGI MODERN & TERUJI</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+        <div style="padding:16px;border-radius:12px;background:rgba(0,212,212,.06);border:1px solid rgba(0,212,212,.18);">
+          <div class="mono" style="font-size:10px;color:#5b7a8c;">FRONTEND</div>
+          <div class="disp" style="color:var(--txt);font-weight:700;font-size:16px;margin-top:4px;">Next.js 14</div>
+          <div class="mono" style="font-size:10px;color:var(--cyan);margin-top:3px;">React · TypeScript</div>
+        </div>
+        <div style="padding:16px;border-radius:12px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.18);">
+          <div class="mono" style="font-size:10px;color:#5b7a8c;">BACKEND</div>
+          <div class="disp" style="color:var(--txt);font-weight:700;font-size:16px;margin-top:4px;">FastAPI</div>
+          <div class="mono" style="font-size:10px;color:#c084fc;margin-top:3px;">Python · Async</div>
+        </div>
+        <div style="padding:16px;border-radius:12px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);">
+          <div class="mono" style="font-size:10px;color:#5b7a8c;">AI ENGINE</div>
+          <div class="disp" style="color:var(--txt);font-weight:700;font-size:16px;margin-top:4px;">ArcFace</div>
+          <div class="mono" style="font-size:10px;color:#4ade80;margin-top:3px;">Face Recognition</div>
+        </div>
+        <div style="padding:16px;border-radius:12px;background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.18);">
+          <div class="mono" style="font-size:10px;color:#5b7a8c;">DATABASE</div>
+          <div class="disp" style="color:var(--txt);font-weight:700;font-size:16px;margin-top:4px;">MySQL 8</div>
+          <div class="mono" style="font-size:10px;color:var(--orange-l);margin-top:3px;">Terenkripsi</div>
+        </div>
+        <div style="padding:16px;border-radius:12px;background:rgba(0,212,212,.06);border:1px solid rgba(0,212,212,.18);">
+          <div class="mono" style="font-size:10px;color:#5b7a8c;">PEMBAYARAN</div>
+          <div class="disp" style="color:var(--txt);font-weight:700;font-size:16px;margin-top:4px;">Payment GW</div>
+          <div class="mono" style="font-size:10px;color:var(--cyan);margin-top:3px;">VA · QRIS · e-Wallet</div>
+        </div>
+        <div style="padding:16px;border-radius:12px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);">
+          <div class="mono" style="font-size:10px;color:#5b7a8c;">NOTIFIKASI</div>
+          <div class="disp" style="color:var(--txt);font-weight:700;font-size:16px;margin-top:4px;">WhatsApp API</div>
+          <div class="mono" style="font-size:10px;color:#4ade80;margin-top:3px;">Real-time</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+        <span class="mono" style="font-size:11px;padding:6px 13px;border-radius:999px;border:1px solid rgba(0,212,212,.3);color:var(--cyan);">HTTPS / TLS</span>
+        <span class="mono" style="font-size:11px;padding:6px 13px;border-radius:999px;border:1px solid rgba(0,212,212,.3);color:var(--cyan);">AES-256</span>
+        <span class="mono" style="font-size:11px;padding:6px 13px;border-radius:999px;border:1px solid rgba(0,212,212,.3);color:var(--cyan);">2FA</span>
+        <span class="mono" style="font-size:11px;padding:6px 13px;border-radius:999px;border:1px solid rgba(0,212,212,.3);color:var(--cyan);">PWA</span>
+        <span class="mono" style="font-size:11px;padding:6px 13px;border-radius:999px;border:1px solid rgba(0,212,212,.3);color:var(--cyan);">CLOUD HOSTING</span>
+        <span class="mono" style="font-size:11px;padding:6px 13px;border-radius:999px;border:1px solid rgba(0,212,212,.3);color:var(--cyan);">AUTO-BACKUP</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PIPELINE ABSENSI (FLOW HUD) ============ -->
+<div class="shot" data-shot="pipeline" style="padding:30px;">
+  <div style="width:880px;border-radius:18px;padding:30px 26px;border:1px solid #143042;
+       background:radial-gradient(120% 90% at 0% 0%, rgba(0,184,184,.10), transparent 50%),linear-gradient(180deg,#0a1722,#06121b);box-shadow:0 22px 60px rgba(0,0,0,.5);">
+    <div class="mono" style="font-size:11px;color:var(--cyan);letter-spacing:.16em;margin-bottom:22px;">// ALUR DATA ABSENSI — DARI WAJAH KE NOTIFIKASI ORANG TUA</div>
+    <div style="display:flex;align-items:stretch;gap:0;">
+      <div style="flex:1;text-align:center;">
+        <div style="width:64px;height:64px;margin:0 auto;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(0,212,212,.1);border:1px solid rgba(0,212,212,.35);box-shadow:0 0 22px rgba(0,212,212,.25);">📷</div>
+        <div class="disp" style="color:var(--txt);font-weight:700;font-size:14px;margin-top:12px;">Scan Wajah</div>
+        <div class="mono" style="font-size:9.5px;color:#5b7a8c;margin-top:4px;">~1 detik</div>
+      </div>
+      <div style="display:flex;align-items:center;color:var(--cyan);font-size:24px;padding:0 4px;margin-top:18px;">›</div>
+      <div style="flex:1;text-align:center;">
+        <div style="width:64px;height:64px;margin:0 auto;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.35);box-shadow:0 0 22px rgba(168,85,247,.22);">🧠</div>
+        <div class="disp" style="color:var(--txt);font-weight:700;font-size:14px;margin-top:12px;">Verifikasi AI</div>
+        <div class="mono" style="font-size:9.5px;color:#5b7a8c;margin-top:4px;">akurasi 99%+</div>
+      </div>
+      <div style="display:flex;align-items:center;color:var(--cyan);font-size:24px;padding:0 4px;margin-top:18px;">›</div>
+      <div style="flex:1;text-align:center;">
+        <div style="width:64px;height:64px;margin:0 auto;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.35);box-shadow:0 0 22px rgba(249,115,22,.2);">📍</div>
+        <div class="disp" style="color:var(--txt);font-weight:700;font-size:14px;margin-top:12px;">Cek Lokasi</div>
+        <div class="mono" style="font-size:9.5px;color:#5b7a8c;margin-top:4px;">geofencing</div>
+      </div>
+      <div style="display:flex;align-items:center;color:var(--cyan);font-size:24px;padding:0 4px;margin-top:18px;">›</div>
+      <div style="flex:1;text-align:center;">
+        <div style="width:64px;height:64px;margin:0 auto;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(0,212,212,.1);border:1px solid rgba(0,212,212,.35);box-shadow:0 0 22px rgba(0,212,212,.25);">🗄️</div>
+        <div class="disp" style="color:var(--txt);font-weight:700;font-size:14px;margin-top:12px;">Simpan Data</div>
+        <div class="mono" style="font-size:9.5px;color:#5b7a8c;margin-top:4px;">database</div>
+      </div>
+      <div style="display:flex;align-items:center;color:var(--cyan);font-size:24px;padding:0 4px;margin-top:18px;">›</div>
+      <div style="flex:1;text-align:center;">
+        <div style="width:64px;height:64px;margin:0 auto;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.35);box-shadow:0 0 22px rgba(34,197,94,.25);">💬</div>
+        <div class="disp" style="color:var(--txt);font-weight:700;font-size:14px;margin-top:12px;">Notif Ortu</div>
+        <div class="mono" style="font-size:9.5px;color:#4ade80;margin-top:4px;">WhatsApp</div>
+      </div>
+    </div>
+    <div style="margin-top:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(0,184,184,.4),transparent);"></div>
+    <div class="mono" style="font-size:11px;color:#8baebe;text-align:center;margin-top:14px;">Seluruh proses berjalan otomatis dalam <span style="color:var(--cyan);">hitungan detik</span> — tanpa sentuhan staf TU</div>
+  </div>
+</div>
+
+<!-- ============ ECOSYSTEM HUB (modul mengelilingi inti) ============ -->
+<div class="shot" data-shot="ecosystem" style="padding:30px;">
+  <div style="width:820px;border-radius:18px;padding:30px;border:1px solid #143042;
+       background:radial-gradient(80% 70% at 50% 50%, rgba(0,184,184,.12), transparent 60%),linear-gradient(180deg,#0a1722,#06121b);box-shadow:0 22px 60px rgba(0,0,0,.5);">
+    <div class="mono" style="font-size:11px;color:var(--cyan);letter-spacing:.16em;margin-bottom:8px;text-align:center;">// SATU EKOSISTEM — 14 MODUL TERINTEGRASI</div>
+    <div style="text-align:center;margin:18px 0 22px;">
+      <span class="disp" style="display:inline-block;padding:16px 30px;border-radius:16px;font-weight:800;font-size:24px;color:#06121b;background:linear-gradient(135deg,#19e3e3,#00b8b8);box-shadow:0 0 40px rgba(0,212,212,.5);">AETHERA CORE</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">😊</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">ABSENSI AI</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">💳</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">SPP ONLINE</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">🎓</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">LMS & RAPOR</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">🏆</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">GAMIFIKASI</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">💬</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">KOMUNIKASI</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">❤️</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">KONSELING</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">📚</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">PERPUSTAKAAN</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">🏥</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">UKS</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">🎯</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">EKSKUL</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">📦</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">INVENTARIS</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">📃</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">SURAT OTOMATIS</div></div>
+      <div style="padding:14px 10px;border-radius:12px;text-align:center;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:22px;">🤖</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:5px;">AI INSIGHT</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STATS STRIP (HUD METRICS) ============ -->
+<div class="shot" data-shot="stats_strip" style="padding:30px;">
+  <div style="width:880px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+    <div style="padding:22px;border-radius:16px;text-align:center;border:1px solid rgba(0,212,212,.25);background:radial-gradient(100% 100% at 50% 0%, rgba(0,212,212,.1), transparent),linear-gradient(180deg,#0a1722,#06121b);">
+      <div class="disp" style="font-weight:800;font-size:40px;color:var(--cyan);text-shadow:0 0 20px rgba(0,212,212,.4);">14</div>
+      <div class="mono" style="font-size:10px;color:#8baebe;letter-spacing:.08em;margin-top:4px;">MODUL TERINTEGRASI</div>
+    </div>
+    <div style="padding:22px;border-radius:16px;text-align:center;border:1px solid rgba(34,197,94,.25);background:radial-gradient(100% 100% at 50% 0%, rgba(34,197,94,.1), transparent),linear-gradient(180deg,#0a1722,#06121b);">
+      <div class="disp" style="font-weight:800;font-size:40px;color:#4ade80;text-shadow:0 0 20px rgba(34,197,94,.4);">99%</div>
+      <div class="mono" style="font-size:10px;color:#8baebe;letter-spacing:.08em;margin-top:4px;">AKURASI WAJAH AI</div>
+    </div>
+    <div style="padding:22px;border-radius:16px;text-align:center;border:1px solid rgba(168,85,247,.25);background:radial-gradient(100% 100% at 50% 0%, rgba(168,85,247,.1), transparent),linear-gradient(180deg,#0a1722,#06121b);">
+      <div class="disp" style="font-weight:800;font-size:40px;color:#c084fc;text-shadow:0 0 20px rgba(168,85,247,.4);">24/7</div>
+      <div class="mono" style="font-size:10px;color:#8baebe;letter-spacing:.08em;margin-top:4px;">AKSES & PEMBAYARAN</div>
+    </div>
+    <div style="padding:22px;border-radius:16px;text-align:center;border:1px solid rgba(249,115,22,.25);background:radial-gradient(100% 100% at 50% 0%, rgba(249,115,22,.1), transparent),linear-gradient(180deg,#0a1722,#06121b);">
+      <div class="disp" style="font-weight:800;font-size:40px;color:var(--orange-l);text-shadow:0 0 20px rgba(249,115,22,.4);">2 mgg</div>
+      <div class="mono" style="font-size:10px;color:#8baebe;letter-spacing:.08em;margin-top:4px;">SIAP DIGUNAKAN</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MANFAAT PER PERAN (ROLE GRID) ============ -->
+<div class="shot" data-shot="roles" style="padding:30px;">
+  <div style="width:880px;border-radius:18px;padding:30px;border:1px solid #143042;
+       background:radial-gradient(110% 80% at 50% -10%, rgba(0,184,184,.10), transparent 55%),linear-gradient(180deg,#0a1722,#06121b);box-shadow:0 22px 60px rgba(0,0,0,.5);">
+    <div class="mono" style="font-size:11px;color:var(--cyan);letter-spacing:.16em;margin-bottom:20px;">// SATU PLATFORM — MANFAAT BERBEDA UNTUK SETIAP PERAN</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+      <div style="display:flex;gap:14px;padding:16px;border-radius:13px;background:rgba(0,212,212,.05);border:1px solid rgba(0,212,212,.18);">
+        <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(0,212,212,.12);">🎯</div>
+        <div><div class="disp" style="color:var(--txt);font-weight:700;font-size:15px;">Kepala Sekolah</div><div style="color:#8baebe;font-size:12px;line-height:1.5;margin-top:3px;">Pantau seluruh sekolah real-time + ringkasan AI mingguan untuk ambil keputusan berbasis data.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px;border-radius:13px;background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.18);">
+        <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(168,85,247,.12);">👩‍🏫</div>
+        <div><div class="disp" style="color:var(--txt);font-weight:700;font-size:15px;">Wali Kelas & Guru</div><div style="color:#8baebe;font-size:12px;line-height:1.5;margin-top:3px;">Absensi & nilai otomatis, jurnal mengajar, tanpa rekap manual yang memakan waktu.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px;border-radius:13px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.18);">
+        <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(34,197,94,.12);">💚</div>
+        <div><div class="disp" style="color:var(--txt);font-weight:700;font-size:15px;">Guru BK</div><div style="color:#8baebe;font-size:12px;line-height:1.5;margin-top:3px;">Deteksi dini lewat mood tracker, booking konseling, dan catatan privat yang aman.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px;border-radius:13px;background:rgba(249,115,22,.05);border:1px solid rgba(249,115,22,.18);">
+        <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(249,115,22,.12);">🗂️</div>
+        <div><div class="disp" style="color:var(--txt);font-weight:700;font-size:15px;">Staf TU & Admin</div><div style="color:#8baebe;font-size:12px;line-height:1.5;margin-top:3px;">SPP terekonsiliasi otomatis, surat 1 klik, inventaris & data siswa terpusat.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px;border-radius:13px;background:rgba(0,212,212,.05);border:1px solid rgba(0,212,212,.18);">
+        <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(0,212,212,.12);">👨‍👩‍👧</div>
+        <div><div class="disp" style="color:var(--txt);font-weight:700;font-size:15px;">Orang Tua</div><div style="color:#8baebe;font-size:12px;line-height:1.5;margin-top:3px;">Tahu anak hadir/pulang via WhatsApp, pantau nilai & bayar SPP dari rumah.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px;border-radius:13px;background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.18);">
+        <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(168,85,247,.12);">🎓</div>
+        <div><div class="disp" style="color:var(--txt);font-weight:700;font-size:15px;">Siswa</div><div style="color:#8baebe;font-size:12px;line-height:1.5;margin-top:3px;">Absen cepat tanpa antre, lihat jadwal & nilai, kumpul tugas, dan naik peringkat lewat gamifikasi.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ROADMAP (TIMELINE HUD) ============ -->
+<div class="shot" data-shot="roadmap" style="padding:30px;">
+  <div style="width:880px;border-radius:18px;padding:30px;border:1px solid #143042;
+       background:radial-gradient(110% 80% at 100% 0%, rgba(0,184,184,.10), transparent 55%),linear-gradient(180deg,#0a1722,#06121b);box-shadow:0 22px 60px rgba(0,0,0,.5);">
+    <div class="mono" style="font-size:11px;color:var(--cyan);letter-spacing:.16em;margin-bottom:24px;">// PRODUK YANG TERUS BERKEMBANG — INVESTASI YANG TUMBUH</div>
+    <div style="position:relative;padding-left:8px;">
+      <div style="position:absolute;left:13px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--cyan),rgba(0,184,184,.15));"></div>
+      <div style="display:flex;gap:18px;margin-bottom:22px;align-items:flex-start;">
+        <div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:#06121b;border:3px solid #4ade80;box-shadow:0 0 14px rgba(34,197,94,.5);z-index:1;"></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:10px;"><span class="disp" style="color:var(--txt);font-weight:700;font-size:16px;">Tersedia Sekarang</span><span class="mono" style="font-size:9px;padding:3px 9px;border-radius:999px;background:rgba(34,197,94,.15);color:#4ade80;">LIVE</span></div><div style="color:#8baebe;font-size:12.5px;line-height:1.5;margin-top:4px;">Absensi AI & QR, SPP online, LMS & rapor, gamifikasi, komunikasi WhatsApp, 14 modul terintegrasi.</div></div>
+      </div>
+      <div style="display:flex;gap:18px;margin-bottom:22px;align-items:flex-start;">
+        <div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:#06121b;border:3px solid var(--cyan);box-shadow:0 0 14px rgba(0,212,212,.5);z-index:1;"></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:10px;"><span class="disp" style="color:var(--txt);font-weight:700;font-size:16px;">Sedang Dikembangkan</span><span class="mono" style="font-size:9px;padding:3px 9px;border-radius:999px;background:rgba(0,212,212,.15);color:var(--cyan);">SOON</span></div><div style="color:#8baebe;font-size:12.5px;line-height:1.5;margin-top:4px;">Bank soal AI lebih canggih, rapor Kurikulum Merdeka, dan analitik prediktif kehadiran.</div></div>
+      </div>
+      <div style="display:flex;gap:18px;align-items:flex-start;">
+        <div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:#06121b;border:3px solid #5b7a8c;z-index:1;"></div>
+        <div style="flex:1;"><div style="display:flex;align-items:center;gap:10px;"><span class="disp" style="color:var(--txt);font-weight:700;font-size:16px;">Rencana Berikutnya</span><span class="mono" style="font-size:9px;padding:3px 9px;border-radius:999px;background:rgba(139,174,190,.12);color:#8baebe;">NEXT</span></div><div style="color:#8baebe;font-size:12.5px;line-height:1.5;margin-top:4px;">Integrasi Dapodik, modul alumni, dan fitur kustom sesuai masukan sekolah mitra perintis.</div></div>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding-top:16px;border-top:1px solid #143042;" class="mono"><span style="font-size:11px;color:#8baebe;">Setiap pembaruan <span style="color:var(--cyan);">otomatis & gratis</span> untuk semua sekolah pelanggan — tanpa biaya tambahan.</span></div>
+  </div>
+</div>
+
+<!-- ============ ONE-PAGER / BROSUR (A4 PENUH) ============ -->
+<div class="shot" data-shot="onepager" style="padding:0;">
+  <div style="position:relative;width:1300px;height:1838px;overflow:hidden;font-family:'Inter',sans-serif;
+       background:radial-gradient(120% 50% at 50% -8%, rgba(0,184,184,.16), transparent 55%),linear-gradient(180deg,#06121b 0%,#050a0f 55%,#04080c 100%);">
+    <div style="position:absolute;inset:0;background-image:
+         linear-gradient(rgba(0,184,184,.07) 1px,transparent 1px),
+         linear-gradient(90deg,rgba(0,184,184,.07) 1px,transparent 1px);background-size:50px 50px;"></div>
+    <!-- corner brackets -->
+    <div style="position:absolute;left:44px;top:44px;width:62px;height:62px;border-left:3px solid var(--cyan);border-top:3px solid var(--cyan);opacity:.8;"></div>
+    <div style="position:absolute;right:44px;top:44px;width:62px;height:62px;border-right:3px solid var(--cyan);border-top:3px solid var(--cyan);opacity:.8;"></div>
+    <div style="position:absolute;left:44px;bottom:44px;width:62px;height:62px;border-left:3px solid var(--cyan);border-bottom:3px solid var(--cyan);opacity:.8;"></div>
+    <div style="position:absolute;right:44px;bottom:44px;width:62px;height:62px;border-right:3px solid var(--cyan);border-bottom:3px solid var(--cyan);opacity:.8;"></div>
+
+    <div style="position:absolute;left:78px;right:78px;top:78px;">
+      <!-- header -->
+      <div style="display:flex;align-items:center;gap:20px;">
+        <img src="frontend/public/logo.png" style="width:86px;height:86px;border-radius:20px;box-shadow:0 0 34px rgba(0,212,212,.45);" />
+        <div style="flex:1;">
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:56px;color:#eafdfd;line-height:1;text-shadow:0 0 40px rgba(0,212,212,.4);">AETHERA</div>
+          <div class="mono" style="font-size:15px;color:var(--cyan);letter-spacing:.22em;margin-top:6px;">PLATFORM MANAJEMEN SEKOLAH</div>
+        </div>
+        <div style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:14px;color:#8baebe;line-height:1.8;">
+          <div style="color:var(--cyan);">aethera.my.id</div>
+          <div>0812-9315-9011</div>
+        </div>
+      </div>
+      <div style="height:2px;margin:26px 0 30px;background:linear-gradient(90deg,var(--cyan),transparent);box-shadow:0 0 14px rgba(0,212,212,.5);"></div>
+
+      <!-- headline -->
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:42px;color:#eafdfd;line-height:1.18;">Satu Platform. Seluruh Sekolah.<br/>Tanpa Ribet.</div>
+      <div style="font-size:21px;color:#9fc3cf;line-height:1.5;margin-top:16px;font-weight:300;">Absensi wajah AI, pembayaran SPP online, LMS & rapor digital, gamifikasi, hingga notifikasi WhatsApp ke orang tua — menggantikan mesin absensi dan banyak aplikasi terpisah.</div>
+
+      <!-- stat row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px;">
+        <div style="padding:20px;border-radius:14px;text-align:center;border:1px solid rgba(0,212,212,.25);background:rgba(0,212,212,.05);"><div style="font-family:'Space Grotesk';font-weight:800;font-size:38px;color:var(--cyan);">14</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:2px;">MODUL</div></div>
+        <div style="padding:20px;border-radius:14px;text-align:center;border:1px solid rgba(34,197,94,.25);background:rgba(34,197,94,.05);"><div style="font-family:'Space Grotesk';font-weight:800;font-size:38px;color:#4ade80;">99%</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:2px;">AKURASI AI</div></div>
+        <div style="padding:20px;border-radius:14px;text-align:center;border:1px solid rgba(168,85,247,.25);background:rgba(168,85,247,.05);"><div style="font-family:'Space Grotesk';font-weight:800;font-size:38px;color:#c084fc;">24/7</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:2px;">AKSES</div></div>
+        <div style="padding:20px;border-radius:14px;text-align:center;border:1px solid rgba(249,115,22,.25);background:rgba(249,115,22,.05);"><div style="font-family:'Space Grotesk';font-weight:800;font-size:38px;color:var(--orange-l);">2mgg</div><div class="mono" style="font-size:10px;color:#8baebe;margin-top:2px;">SIAP PAKAI</div></div>
+      </div>
+
+      <!-- fitur unggulan -->
+      <div class="mono" style="font-size:13px;color:var(--cyan);letter-spacing:.16em;margin:36px 0 16px;">// FITUR UNGGULAN</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+        <div style="display:flex;gap:14px;padding:16px 18px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:26px;">😊</div><div><div style="color:#e8f4f8;font-weight:700;font-size:16px;">Absensi Wajah & QR</div><div style="color:#8baebe;font-size:13px;margin-top:2px;">Tanpa sentuh, anti-titip, verifikasi lokasi.</div></div></div>
+        <div style="display:flex;gap:14px;padding:16px 18px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:26px;">💳</div><div><div style="color:#e8f4f8;font-weight:700;font-size:16px;">Pembayaran SPP Online</div><div style="color:#8baebe;font-size:13px;margin-top:2px;">VA, QRIS, e-wallet — lunas otomatis.</div></div></div>
+        <div style="display:flex;gap:14px;padding:16px 18px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:26px;">🎓</div><div><div style="color:#e8f4f8;font-weight:700;font-size:16px;">LMS, Nilai & Rapor PDF</div><div style="color:#8baebe;font-size:13px;margin-top:2px;">Ujian online, jurnal mengajar, rapor otomatis.</div></div></div>
+        <div style="display:flex;gap:14px;padding:16px 18px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:26px;">💬</div><div><div style="color:#e8f4f8;font-weight:700;font-size:16px;">Notifikasi WhatsApp Ortu</div><div style="color:#8baebe;font-size:13px;margin-top:2px;">Orang tua tahu anak hadir/pulang real-time.</div></div></div>
+        <div style="display:flex;gap:14px;padding:16px 18px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:26px;">🏆</div><div><div style="color:#e8f4f8;font-weight:700;font-size:16px;">Disiplin & Gamifikasi</div><div style="color:#8baebe;font-size:13px;margin-top:2px;">Poin, level & leaderboard yang memotivasi.</div></div></div>
+        <div style="display:flex;gap:14px;padding:16px 18px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid #143042;"><div style="font-size:26px;">🤖</div><div><div style="color:#e8f4f8;font-weight:700;font-size:16px;">Dashboard & AI Insight</div><div style="color:#8baebe;font-size:13px;margin-top:2px;">Ringkasan AI mingguan untuk kepala sekolah.</div></div></div>
+      </div>
+
+      <!-- harga ringkas -->
+      <div class="mono" style="font-size:13px;color:var(--cyan);letter-spacing:.16em;margin:34px 0 16px;">// PAKET HARGA PERINTIS</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div style="padding:22px 18px;border-radius:14px;border:1px solid #143042;background:rgba(255,255,255,.03);">
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#e8f4f8;">DASAR</div>
+          <div class="mono" style="font-size:11px;color:#8baebe;margin-top:2px;">s/d 300 siswa</div>
+          <div style="font-family:'Space Grotesk';font-weight:800;font-size:26px;color:var(--cyan);margin-top:12px;">Rp 15,5jt</div>
+          <div class="mono" style="font-size:11px;color:#5b7a8c;">/tahun</div>
+        </div>
+        <div style="padding:22px 18px;border-radius:14px;border:2px solid var(--cyan);background:rgba(0,212,212,.07);position:relative;box-shadow:0 0 30px rgba(0,212,212,.2);">
+          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--cyan);color:#06121b;font-family:'JetBrains Mono';font-size:10px;font-weight:700;padding:4px 14px;border-radius:999px;letter-spacing:.06em;">POPULER</div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#eafdfd;">SEKOLAH</div>
+          <div class="mono" style="font-size:11px;color:#8baebe;margin-top:2px;">s/d 1.000 siswa</div>
+          <div style="font-family:'Space Grotesk';font-weight:800;font-size:26px;color:var(--cyan);margin-top:12px;">Rp 45,5jt</div>
+          <div class="mono" style="font-size:11px;color:#5b7a8c;">/tahun</div>
+        </div>
+        <div style="padding:22px 18px;border-radius:14px;border:1px solid #143042;background:rgba(255,255,255,.03);">
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#e8f4f8;">YAYASAN</div>
+          <div class="mono" style="font-size:11px;color:#8baebe;margin-top:2px;">multi-sekolah</div>
+          <div style="font-family:'Space Grotesk';font-weight:800;font-size:24px;color:var(--cyan);margin-top:12px;">dari 158jt</div>
+          <div class="mono" style="font-size:11px;color:#5b7a8c;">/tahun</div>
+        </div>
+      </div>
+      <div class="mono" style="font-size:12px;color:#5b7a8c;margin-top:14px;">* Sudah termasuk setup, pelatihan & dukungan. Gratis biaya setup untuk Sekolah Perintis.</div>
+
+      <!-- tampilan aplikasi di HP -->
+      <div class="mono" style="font-size:13px;color:var(--cyan);letter-spacing:.16em;margin:22px 0 12px;">// TAMPILAN APLIKASI DI PONSEL</div>
+      <div style="display:flex;justify-content:center;align-items:flex-start;gap:34px;">
+
+        <!-- ============ HP 1: DASHBOARD + CHART ============ -->
+        <div style="width:252px;height:512px;border-radius:30px;background:#0a141d;border:7px solid #18242e;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;">
+          <div style="height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:70px;height:5px;border-radius:99px;background:#18242e;"></div></div>
+          <!-- top bar (hamburger sidebar) -->
+          <div style="display:flex;align-items:center;gap:9px;padding:7px 14px;border-bottom:1px solid #143042;flex-shrink:0;">
+            <div style="font-size:15px;color:#8baebe;">&#9776;</div>
+            <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#00d4d4,#0a6a8a);"></div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:13px;color:#e8f4f8;">Aethera</div>
+            <div style="margin-left:auto;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#00d4d4,#a855f7);"></div>
+          </div>
+          <div style="padding:11px 13px;overflow:hidden;flex:1;">
+            <div style="font-family:'JetBrains Mono';font-size:7.5px;color:#00d4d4;letter-spacing:.12em;">EXECUTIVE OVERVIEW</div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#e8f4f8;margin-bottom:9px;">Ringkasan Sekolah</div>
+            <!-- KPI cards 2x2 -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;">
+              <div style="padding:8px 9px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;"><div style="font-family:'JetBrains Mono';font-size:6.5px;color:#4a6b82;letter-spacing:.06em;">TOTAL SISWA</div><div style="font-family:'Space Grotesk';font-weight:800;font-size:17px;color:#00d4d4;">842</div></div>
+              <div style="padding:8px 9px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;"><div style="font-family:'JetBrains Mono';font-size:6.5px;color:#4a6b82;letter-spacing:.06em;">HADIR HARI INI</div><div style="font-family:'Space Grotesk';font-weight:800;font-size:17px;color:#00e676;">96%</div></div>
+              <div style="padding:8px 9px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;"><div style="font-family:'JetBrains Mono';font-size:6.5px;color:#4a6b82;letter-spacing:.06em;">TELAT / ABSEN</div><div style="font-family:'Space Grotesk';font-weight:800;font-size:17px;color:#ffc107;">18/4</div></div>
+              <div style="padding:8px 9px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;"><div style="font-family:'JetBrains Mono';font-size:6.5px;color:#4a6b82;letter-spacing:.06em;">RATA SIKAP</div><div style="font-family:'Space Grotesk';font-weight:800;font-size:17px;color:#a855f7;">92</div></div>
+            </div>
+            <!-- area chart -->
+            <div style="padding:9px 10px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;">
+              <div style="font-family:'Space Grotesk';font-weight:600;font-size:9.5px;color:#e8f4f8;margin-bottom:6px;">Tren Kehadiran 7 Hari</div>
+              <svg width="100%" height="78" viewBox="0 0 200 78" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="op-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00e676" stop-opacity=".45"/><stop offset="100%" stop-color="#00e676" stop-opacity="0"/></linearGradient>
+                </defs>
+                <line x1="0" y1="20" x2="200" y2="20" stroke="#1a3045" stroke-width="1"/>
+                <line x1="0" y1="45" x2="200" y2="45" stroke="#1a3045" stroke-width="1"/>
+                <path d="M0,52 L33,40 L66,46 L100,30 L133,34 L166,18 L200,24 L200,78 L0,78 Z" fill="url(#op-area)"/>
+                <path d="M0,52 L33,40 L66,46 L100,30 L133,34 L166,18 L200,24" fill="none" stroke="#00e676" stroke-width="2"/>
+                <path d="M0,60 L33,55 L66,58 L100,50 L133,54 L166,46 L200,49" fill="none" stroke="#ffc107" stroke-width="1.5" stroke-dasharray="3 2"/>
+              </svg>
+              <div style="display:flex;gap:10px;margin-top:5px;"><span style="font-family:'JetBrains Mono';font-size:6.5px;color:#8baebe;"><span style="color:#00e676;">&#9679;</span> Hadir</span><span style="font-family:'JetBrains Mono';font-size:6.5px;color:#8baebe;"><span style="color:#ffc107;">&#9679;</span> Telat</span></div>
+            </div>
+            <!-- kelas terbaik -->
+            <div style="padding:9px 10px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;margin-top:9px;">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:7px;"><span style="font-size:10px;">&#127942;</span><span style="font-family:'Space Grotesk';font-weight:600;font-size:9.5px;color:#e8f4f8;">Kelas Terbaik</span></div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="width:15px;height:15px;border-radius:50%;background:linear-gradient(135deg,#ffe082,#ff8f00);color:#3a2600;font-family:'Space Grotesk';font-weight:800;font-size:8px;display:flex;align-items:center;justify-content:center;">1</span><span style="font-size:9px;color:#e8f4f8;flex:1;">XI IPA 1</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#00e676;">98%</span></div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="width:15px;height:15px;border-radius:50%;background:#1a3045;color:#8baebe;font-family:'Space Grotesk';font-weight:800;font-size:8px;display:flex;align-items:center;justify-content:center;">2</span><span style="font-size:9px;color:#e8f4f8;flex:1;">XI IPS 2</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#00d4d4;">96%</span></div>
+              <div style="display:flex;align-items:center;gap:7px;"><span style="width:15px;height:15px;border-radius:50%;background:#1a3045;color:#8baebe;font-family:'Space Grotesk';font-weight:800;font-size:8px;display:flex;align-items:center;justify-content:center;">3</span><span style="font-size:9px;color:#e8f4f8;flex:1;">X MIPA 3</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#00d4d4;">95%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ HP 2: ANALITIK (DONUT + BAR) ============ -->
+        <div style="width:252px;height:512px;border-radius:30px;background:#0a141d;border:7px solid #18242e;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;">
+          <div style="height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:70px;height:5px;border-radius:99px;background:#18242e;"></div></div>
+          <div style="display:flex;align-items:center;gap:9px;padding:7px 14px;border-bottom:1px solid #143042;flex-shrink:0;">
+            <div style="font-size:15px;color:#8baebe;">&#9776;</div>
+            <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#00d4d4,#0a6a8a);"></div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:13px;color:#e8f4f8;">Aethera</div>
+            <div style="margin-left:auto;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#00d4d4,#a855f7);"></div>
+          </div>
+          <div style="padding:11px 13px;overflow:hidden;flex:1;">
+            <div style="font-family:'JetBrains Mono';font-size:7.5px;color:#00d4d4;letter-spacing:.12em;">ANALITIK</div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#e8f4f8;margin-bottom:9px;">Laporan Kehadiran</div>
+            <!-- donut -->
+            <div style="padding:9px 10px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;margin-bottom:9px;display:flex;align-items:center;gap:12px;">
+              <svg width="78" height="78" viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#13283a" stroke-width="5"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#00e676" stroke-width="5" stroke-dasharray="82 18" stroke-dashoffset="25" stroke-linecap="round"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#ffc107" stroke-width="5" stroke-dasharray="10 90" stroke-dashoffset="-57" stroke-linecap="round"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#ff1744" stroke-width="5" stroke-dasharray="8 92" stroke-dashoffset="-67" stroke-linecap="round"/>
+                <text x="21" y="20.5" text-anchor="middle" font-size="8" font-weight="700" fill="#e8f4f8" font-family="Space Grotesk">92%</text>
+                <text x="21" y="26" text-anchor="middle" font-size="3" fill="#8baebe" font-family="JetBrains Mono">HADIR</text>
+              </svg>
+              <div style="font-family:'JetBrains Mono';font-size:8px;line-height:1.9;">
+                <div style="color:#8baebe;"><span style="color:#00e676;">&#9679;</span> Hadir 82%</div>
+                <div style="color:#8baebe;"><span style="color:#ffc107;">&#9679;</span> Telat 10%</div>
+                <div style="color:#8baebe;"><span style="color:#ff1744;">&#9679;</span> Alpa 8%</div>
+              </div>
+            </div>
+            <!-- bar 6 minggu -->
+            <div style="padding:9px 10px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;">
+              <div style="font-family:'Space Grotesk';font-weight:600;font-size:9.5px;color:#e8f4f8;margin-bottom:7px;">Tren 6 Minggu</div>
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;height:70px;gap:6px;">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:48px;border-radius:3px 3px 0 0;background:#00e676;"></div><span style="font-family:'JetBrains Mono';font-size:6px;color:#4a6b82;">M1</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:55px;border-radius:3px 3px 0 0;background:#00e676;"></div><span style="font-family:'JetBrains Mono';font-size:6px;color:#4a6b82;">M2</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:51px;border-radius:3px 3px 0 0;background:#00e676;"></div><span style="font-family:'JetBrains Mono';font-size:6px;color:#4a6b82;">M3</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:62px;border-radius:3px 3px 0 0;background:#00d4d4;"></div><span style="font-family:'JetBrains Mono';font-size:6px;color:#4a6b82;">M4</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:58px;border-radius:3px 3px 0 0;background:#00e676;"></div><span style="font-family:'JetBrains Mono';font-size:6px;color:#4a6b82;">M5</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:100%;height:66px;border-radius:3px 3px 0 0;background:#00d4d4;"></div><span style="font-family:'JetBrains Mono';font-size:6px;color:#4a6b82;">M6</span></div>
+              </div>
+            </div>
+            <!-- top jenis pelanggaran -->
+            <div style="padding:9px 10px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;margin-top:9px;">
+              <div style="font-family:'Space Grotesk';font-weight:600;font-size:9.5px;color:#e8f4f8;margin-bottom:7px;">Top Jenis Pelanggaran (90 hari)</div>
+              <div style="margin-bottom:6px;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:8px;color:#8baebe;">Terlambat</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#ffc107;">42</span></div><div style="height:4px;border-radius:99px;background:#13283a;"><div style="width:85%;height:100%;border-radius:99px;background:#ffc107;"></div></div></div>
+              <div style="margin-bottom:6px;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:8px;color:#8baebe;">Atribut tidak lengkap</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#00d4d4;">28</span></div><div style="height:4px;border-radius:99px;background:#13283a;"><div style="width:57%;height:100%;border-radius:99px;background:#00d4d4;"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:8px;color:#8baebe;">Bolos jam pelajaran</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#ff5d5d;">11</span></div><div style="height:4px;border-radius:99px;background:#13283a;"><div style="width:22%;height:100%;border-radius:99px;background:#ff5d5d;"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ HP 3: ABSEN WAJAH ============ -->
+        <div style="width:252px;height:512px;border-radius:30px;background:#0a141d;border:7px solid #18242e;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;">
+          <div style="height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:70px;height:5px;border-radius:99px;background:#18242e;"></div></div>
+          <div style="display:flex;align-items:center;gap:9px;padding:7px 14px;border-bottom:1px solid #143042;flex-shrink:0;">
+            <div style="font-size:15px;color:#8baebe;">&#9776;</div>
+            <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#00d4d4,#0a6a8a);"></div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:13px;color:#e8f4f8;">Aethera</div>
+            <div style="margin-left:auto;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#00d4d4,#a855f7);"></div>
+          </div>
+          <div style="padding:11px 13px;overflow:hidden;flex:1;text-align:center;">
+            <div style="font-family:'JetBrains Mono';font-size:7.5px;color:#00d4d4;letter-spacing:.12em;">ABSEN MASUK</div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#e8f4f8;margin-bottom:9px;">Scan Wajah</div>
+            <div style="position:relative;width:148px;height:178px;margin:0 auto;border-radius:16px;background:linear-gradient(160deg,#10303a,#0a1722);overflow:hidden;border:1px solid #143042;">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:66px;">&#129485;</div>
+              <div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);width:96px;height:120px;border-radius:50% 50% 48% 48%;border:3px solid #22c55e;box-shadow:0 0 24px rgba(34,197,94,.5);"></div>
+              <div style="position:absolute;left:11px;top:11px;width:15px;height:15px;border-left:3px solid #00d4d4;border-top:3px solid #00d4d4;"></div>
+              <div style="position:absolute;right:11px;top:11px;width:15px;height:15px;border-right:3px solid #00d4d4;border-top:3px solid #00d4d4;"></div>
+              <div style="position:absolute;left:11px;bottom:11px;width:15px;height:15px;border-left:3px solid #00d4d4;border-bottom:3px solid #00d4d4;"></div>
+              <div style="position:absolute;right:11px;bottom:11px;width:15px;height:15px;border-right:3px solid #00d4d4;border-bottom:3px solid #00d4d4;"></div>
+              <div style="position:absolute;left:0;right:0;top:42%;height:2px;background:linear-gradient(90deg,transparent,#00f2f2,transparent);box-shadow:0 0 10px #00f2f2;"></div>
+            </div>
+            <div style="margin-top:12px;padding:9px;border-radius:11px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);">
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:12px;color:#4ade80;">&#128522; Wajah terdeteksi</div>
+              <div style="font-family:'JetBrains Mono';font-size:8px;color:#8baebe;margin-top:1px;">Akurasi 99.2% &middot; &#128205; lokasi sah</div>
+            </div>
+            <div style="margin-top:10px;padding:11px;border-radius:12px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:700;font-size:12px;font-family:'Space Grotesk';">&#10003; Catat Kehadiran</div>
+            <!-- log kehadiran terakhir -->
+            <div style="padding:9px 10px;border-radius:10px;background:#0a1520;border:1px solid #1a3045;margin-top:10px;text-align:left;">
+              <div style="font-family:'Space Grotesk';font-weight:600;font-size:9.5px;color:#e8f4f8;margin-bottom:6px;">Kehadiran Terakhir</div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="width:6px;height:6px;border-radius:50%;background:#00e676;"></span><span style="font-size:8.5px;color:#e8f4f8;flex:1;">Hafiz Ramadhan</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#00e676;">06:48 Tepat</span></div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="width:6px;height:6px;border-radius:50%;background:#ffc107;"></span><span style="font-size:8.5px;color:#e8f4f8;flex:1;">Dewi Anjani</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#ffc107;">07:18 Telat</span></div>
+              <div style="display:flex;align-items:center;gap:7px;"><span style="width:6px;height:6px;border-radius:50%;background:#00e676;"></span><span style="font-size:8.5px;color:#e8f4f8;flex:1;">Bagus Pratama</span><span style="font-family:'JetBrains Mono';font-size:7.5px;color:#00e676;">06:52 Tepat</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="mono" style="font-size:11px;color:#5b7a8c;text-align:center;margin-top:14px;">Tampilan nyata aplikasi &mdash; dashboard, grafik analitik &amp; absensi wajah, semua di web &amp; Android/iOS</div>
+    </div>
+
+    <!-- CTA footer bar -->
+    <div style="position:absolute;left:0;right:0;bottom:0;height:150px;background:linear-gradient(90deg,#00b8b8,#0a6a8a);display:flex;align-items:center;justify-content:space-between;padding:0 80px;">
+      <div>
+        <div style="font-family:'Space Grotesk';font-weight:800;font-size:30px;color:#06121b;">Coba demo gratis sekarang</div>
+        <div style="font-family:'JetBrains Mono';font-size:17px;color:#06222a;margin-top:4px;">aethera.my.id · tanpa instalasi</div>
+      </div>
+      <div style="text-align:right;font-family:'Space Grotesk';color:#06121b;">
+        <div style="font-weight:800;font-size:24px;">Andy Siswanto A.B</div>
+        <div style="font-family:'JetBrains Mono';font-size:16px;margin-top:3px;">WA 0812-9315-9011</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Virtual environment
+.venv/
+
+# ONNX models (downloaded at runtime)
+models/
+
+# Database
+*.db
+
+# Logs
+*.log
+
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Storage (user uploads)
+storage/snapshots/
