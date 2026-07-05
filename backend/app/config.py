@@ -20,6 +20,14 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "mysql+aiomysql://root:123321@localhost:3306/aethera"
 
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def fix_database_url(cls, v: str) -> str:
+        # Railway kasih format mysql:// atau mysql2:// — convert ke aiomysql
+        if v.startswith("mysql://") or v.startswith("mysql2://"):
+            v = "mysql+aiomysql://" + v.split("://", 1)[1]
+        return v
+
     CORS_ORIGINS: str = "http://localhost:3000"
 
     FACE_MATCH_THRESHOLD: float = 0.45
